@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargo Space Shop</title>
+    <script>
+        function buyItem(form) {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // Refresh the page on success
+                } else {
+                    alert(data.message);  // Show error message in a popup
+                }
+            });
+            return false;  // Prevent default form submission
+        }
+
+        function sellItem(form) {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // Refresh the page on success
+                } else {
+                    alert(data.message);  // Show error message in a popup
+                }
+            });
+            return false;  // Prevent default form submission
+        }
+
+        function clearItem(form) {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();  // Refresh the page on success
+                } else {
+                    alert(data.message);  // Show error message in a popup
+                }
+            });
+            return false;  // Prevent default form submission
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to your trucking company</h1>
+
+    <!-- Dropdown to select the player -->
+    <form action="/set_player" method="POST">
+        <label for="player">Choose a player:</label>
+        <select name="player" id="player" onchange="this.form.submit()">
+            {% for player in players %}
+                <option value="{{ player }}" {% if player == selected_player %}selected{% endif %}>{{ player }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <h2>Current Player: {{ selected_player }}</h2>
+
+    <!-- Dropdown to select the city -->
+    <form action="/set_city" method="POST">
+        <label for="city">Choose a city:</label>
+        <select name="city" id="city" onchange="this.form.submit()">
+            {% for city in cities %}
+                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <h2>Current City: {{ selected_city }}</h2>
+    <h2>Current Money: ${{ money }}</h2>
+
+    <h2>Cargo Spaces</h2>
+    <ul>
+        {% for space in cargo %}
+            <li>
+                Cargo Space {{ loop.index }}: {{ space if space else 'Empty' }}
+                {% if space %}
+                <form action="/sell" method="POST" style="display:inline;" onsubmit="return sellItem(this);">
+                    <input type="hidden" name="space" value="{{ loop.index }}">
+                    <button type="submit">Sell</button>
+                </form>
+                <form action="/clear" method="POST" style="display:inline;" onsubmit="return clearItem(this);">
+                    <input type="hidden" name="space" value="{{ loop.index }}">
+                    <button type="submit">Clear</button>
+                </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Items for Sale</h2>
+    <ul>
+        {% for item, price in items.items() %}
+            <li>{{ item }} - ${{ price }}
+                <form action="/buy" method="POST" style="display:inline;" onsubmit="return buyItem(this);">
+                    <input type="hidden" name="item" value="{{ item }}">
+                    <button type="submit">Buy</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Transaction Log</h2>
+    <ul>
+        {% for log_entry in log %}
+            <li>{{ log_entry }}</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
