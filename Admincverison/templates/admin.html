@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <h2>Update Prices</h2>
+    <form action="/admin" method="POST">
+        <label for="city">Select City:</label>
+        <select name="city" id="city" onchange="this.form.submit()">
+            <option value="" disabled selected>Select a city</option>
+            {% for city in cities %}
+                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_city %}
+    <form action="/update_prices" method="POST">
+        <input type="hidden" name="city" value="{{ selected_city }}">
+        <h3>Prices in {{ selected_city }}</h3>
+        <ul>
+            {% for item, price in city_prices[selected_city].items() %}
+                <li>
+                    {{ item }}: 
+                    <input type="number" name="{{ item }}" value="{{ price }}" required>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Update Prices</button>
+    </form>
+    {% else %}
+        <p>Please select a city to view and update prices.</p>
+    {% endif %}
+
+    <h2>Send Breaking News</h2>
+    <form action="/push_news" method="POST">
+        <label for="news_message">Breaking News:</label>
+        <textarea name="news_message" id="news_message" rows="4" cols="50"></textarea>
+        <br>
+        <button type="submit">Push News</button>
+    </form>
+
+    <a href="/">Back to Game</a>
+</body>
+</html>
