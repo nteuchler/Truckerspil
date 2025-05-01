@@ -1,1 +1,131 @@
-{"players": {"Player 1": {"money": 175, "cargo": ["", "", ""], "transaction_log": ["Bought Item A for $10 in Los Angeles.", "Bought Item A for $10 in Los Angeles.", "Bought Item A for $10 in Los Angeles.", "Sold Item A for $12 in New York.", "Sold Item A for $12 in New York.", "Sold Item A for $12 in New York.", "Bought Item A for $9 in San Antonio.", "Bought Item A for $9 in San Antonio.", "Bought Item A for $9 in San Antonio.", "Sold Item A for $12 in New York.", "Sold Item A for $12 in New York.", "Sold Item A for $12 in New York.", "Bought Item D for $20 in San Antonio.", "Bought Item D for $20 in San Antonio.", "Bought Item D for $20 in San Antonio.", "Sold Item D for $30 in New York.", "Sold Item D for $30 in New York.", "Sold Item D for $30 in New York.", "Bought Item D for $20 in San Antonio.", "Bought Item D for $20 in San Antonio.", "Bought Item D for $20 in San Antonio.", "Sold Item D for $30 in New York.", "Sold Item D for $30 in New York.", "Sold Item D for $30 in New York."]}, "Player 2": {"money": 100, "cargo": ["", "", ""], "transaction_log": []}, "Player 3": {"money": 100, "cargo": ["", "", ""], "transaction_log": []}, "Player 4": {"money": 100, "cargo": ["", "", ""], "transaction_log": []}}, "selected_city": "New York", "selected_player": "Player 1"}
+{
+  "players": {
+    "Player 1": {
+      "money": 56,
+      "capacity": 2,
+      "cargo": [
+        "Textiles",
+        "Textiles"
+      ],
+      "transaction_log": [
+        "Bought Textiles for \u20ac22 in Le Havre.",
+        {
+          "ts": "2025-05-01T13:51:07+00:00",
+          "money": 78
+        },
+        "Bought Textiles for \u20ac22 in Le Havre.",
+        {
+          "ts": "2025-05-01T13:51:08+00:00",
+          "money": 56
+        },
+        "Sold Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T13:51:18+00:00",
+          "money": 76
+        },
+        "Sold Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T13:51:19+00:00",
+          "money": 96
+        },
+        "Bought Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T13:58:49+00:00",
+          "money": 76
+        },
+        "Bought Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T13:58:49+00:00",
+          "money": 56
+        }
+      ]
+    },
+    "Player 2": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    },
+    "Player 3": {
+      "money": 60,
+      "capacity": 2,
+      "cargo": [
+        "Textiles",
+        "Textiles"
+      ],
+      "transaction_log": [
+        "Bought Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T14:00:18+00:00",
+          "money": 80
+        },
+        "Bought Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T14:00:18+00:00",
+          "money": 60
+        }
+      ]
+    },
+    "Player 4": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    }
+  },
+  "selected_city": "Antwerp",
+  "selected_player": "Player 3",
+  "city_prices": {
+    "Le Havre": {
+      "Electronics": 40,
+      "Textiles": 22,
+      "Wine": 28,
+      "Machinery": 55
+    },
+    "Hamburg": {
+      "Automotive Parts": 48,
+      "Textiles": 18,
+      "Coffee": 32,
+      "Chemicals": 60
+    },
+    "Rotterdam": {
+      "Electronics": 42,
+      "Fruit": 26,
+      "Coffee": 30,
+      "Machinery": 58
+    },
+    "Antwerp": {
+      "Chemicals": 62,
+      "Textiles": 20,
+      "Automotive Parts": 50,
+      "Beer": 25
+    },
+    "Barcelona": {
+      "Wine": 24,
+      "Fruit": 22,
+      "Textiles": 19,
+      "Electronics": 45
+    },
+    "Genoa": {
+      "Machinery": 57,
+      "Automotive Parts": 52,
+      "Olive Oil": 27,
+      "Chemicals": 64
+    },
+    "Valencia": {
+      "Fruit": 20,
+      "Olive Oil": 25,
+      "Wine": 23,
+      "Textiles": 18
+    },
+    "Truck Store": {}
+  },
+  "breaking_news": "",
+  "closed_cities": []
+}

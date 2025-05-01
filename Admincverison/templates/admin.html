@@ -45,6 +45,114 @@
         <button type="submit">Push News</button>
     </form>
 
-    <a href="/">Back to Game</a>
+
+    <h2>Open / Close Cities</h2>
+<form action="/update_city_status" method="POST">
+    <ul>
+    {% for city in cities %}
+        <li>
+            <label>
+                <input type="checkbox"
+                       name="closed_cities"
+                       value="{{ city }}"
+                       {% if city in closed_cities %}checked{% endif %}>
+                {{ city }}
+            </label>
+        </li>
+    {% endfor %}
+    </ul>
+    <button type="submit">Apply</button>
+</form>
+<h2>Adjust Player Money</h2>
+<form action="/adjust_money" method="POST">
+  <table>
+    <tr><th>Player</th><th>Current €</th><th>Change (±)</th></tr>
+    {% for name, pdata in players.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td>{{ pdata.money }}</td>
+        <td>
+          <!-- positive to give, negative to deduct -->
+          <input type="number" name="{{ name }}" value="0" style="width:6em;">
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <button type="submit">Apply</button>
+</form>
+
+<h2>Reset / New Game</h2>
+<form action="/reset_game" method="POST"
+      onsubmit="return confirm('Really reset the entire game? All progress is lost.');">
+    <button type="submit">Reset Game</button>
+</form>
+
+<h2>Player Money over Time</h2>
+<canvas id="moneyChart" height="260"></canvas>
+
+<!-- Luxon first (provides DateTime) -->
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+
+<!-- Chart.js core -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Luxon adapter for Chart.js  -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+
+
+<script>
+const ctx = document.getElementById('moneyChart');
+let chart = null;
+
+// Fetch the 1-minute-binned series that the Flask endpoint returns
+async function fetchSeries() {
+    const r  = await fetch('/money_series');
+    const all = await r.json();           // { "Player 1": [["2025-05-01T14:32:00Z", 110], ...], … }
+
+    // Convert to Chart.js datasets
+    return Object.entries(all).map(([player, pts]) => ({
+        label: player,
+        data: pts.map(p => ({x: p[0], y: p[1]})),  // Luxon adapter parses the ISO strings
+        fill: false,
+        tension: 0.1
+    }));
+}
+
+async function drawOrUpdate() {
+    const datasets = await fetchSeries();
+
+    if (!chart) {                          // first time: create the chart
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: { datasets },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
+                        title: { display: true, text: 'UTC time' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '€' }
+                    }
+                },
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    } else {                               // subsequent refreshes
+        chart.data.datasets = datasets;
+        chart.update();
+    }
+}
+
+// initial draw, then refresh every 30 s
+drawOrUpdate();
+setInterval(drawOrUpdate, 30_000);
+</script>
+
+
+
+<a href="/">Back to Game</a>
 </body>
 </html>

@@ -6,10 +6,68 @@
     <title>Cargo Space Shop</title>
     <body>
         <h1>Welcome to your trucking company</h1>
-    
-        {% if breaking_news %}
-            <h2 style="color: red;">Breaking News: {{ breaking_news }}</h2>
-        {% endif %}
+        <style>
+        /* Red headline bar */
+        #breaking-news {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            background: #ffe5e5;      /* pale red */
+            color: #c00;              /* deep red text */
+            font-weight: bold;
+            text-align: center;
+            padding: 0.5em 0;
+            z-index: 1000;            /* sit above everything else */
+            display: none;            /* hidden until there’s news */
+        }
+
+        /* Keep page content from sliding under the fixed bar */
+        body.has-banner {
+            margin-top: 3em;          /* ~~ equal to banner height */
+        }
+        </style>
+
+       <!-- BREAKING NEWS BANNER -->
+        <div id="breaking-news"></div>
+
+        <script>
+        // initial headline from Flask, so the page shows it immediately
+        let currentNews = {{ breaking_news|tojson }};
+
+        const banner   = document.getElementById('breaking-news');
+        const bodyElem = document.body;
+
+        function renderBanner(news) {
+            if (news) {
+                banner.innerHTML = `Breaking News: ${news}`;
+                banner.style.display = 'block';
+                bodyElem.classList.add('has-banner');
+            } else {
+                banner.style.display = 'none';
+                bodyElem.classList.remove('has-banner');
+            }
+        }
+
+        renderBanner(currentNews);
+
+        async function refreshNews() {
+            try {
+                const r = await fetch('/breaking_news');
+                const data = await r.json();
+                if (data.news !== currentNews) {
+                    currentNews = data.news;
+                    renderBanner(currentNews);
+                }
+            } catch (_) { /* ignore transient network errors */ }
+        }
+
+        // poll every 5 s
+        setInterval(refreshNews, 5000);
+        </script>
+
+
+
+
         
         <!-- The rest of your index.html content -->
     </body>
@@ -68,7 +126,6 @@
     </script>
 </head>
 <body>
-    <h1>Welcome to your trucking company</h1>
 
     <!-- Dropdown to select the player -->
     <form action="/set_player" method="POST">
@@ -87,13 +144,26 @@
         <label for="city">Choose a city:</label>
         <select name="city" id="city" onchange="this.form.submit()">
             {% for city in cities %}
-                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+                <option value="{{ city }}"
+                        {% if city == selected_city %}selected{% endif %}
+                        {% if city in closed_cities %}disabled{% endif %}>
+                    {{ city }}{% if city in closed_cities %} (Closed){% endif %}
+                </option>
             {% endfor %}
         </select>
     </form>
 
     <h2>Current City: {{ selected_city }}</h2>
-    <h2>Current Money: ${{ money }}</h2>
+    <h2>Capacity: {{ cargo|length }} / {{ capacity }}  Money: €{{ money }}</h2>
+    {% if selected_city == 'Truck Store' %}
+        <h2>Truck Store</h2>
+        <p>Your current truck can carry {{ capacity }} pallets.</p>
+        <p>Upgrade to {{ capacity + 1 }} pallets for €{{ upgrade_cost }}?</p>
+        <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
+            <button type="submit">Buy Upgrade</button>
+        </form>
+    {% endif %}
+  
 
     <h2>Cargo Spaces</h2>
     <ul>
@@ -132,6 +202,12 @@
             <li>{{ log_entry }}</li>
         {% endfor %}
     </ul>
+
+
+      
+
+
+
 
 </body>
 </html>

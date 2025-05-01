@@ -1,0 +1,152 @@
+{
+  "players": {
+    "Player 1": {
+      "money": 0,
+      "capacity": 2,
+      "cargo": [
+        "Olive Oil",
+        "Wine"
+      ],
+      "transaction_log": [
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $170 in Valencia.",
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $170 in Valencia.",
+        "Bought Olive Oil for $240 in Valencia.",
+        "Sold Olive Oil for $240 in Valencia.",
+        "Bought Grain for $110 in Rotterdam.",
+        "Sold Grain for $110 in Rotterdam.",
+        "Bought Grain for $110 in Rotterdam.",
+        "Sold Grain for $110 in Rotterdam.",
+        {
+          "type": "admin_adjust",
+          "delta": -10
+        },
+        {
+          "type": "admin_adjust",
+          "delta": 100
+        },
+        "Bought Chemicals for $250 in Antwerp.",
+        "Sold Chemicals for $250 in Antwerp.",
+        "Bought Chemicals for $250 in Antwerp.",
+        "Sold Chemicals for $250 in Antwerp.",
+        "Bought Olive Oil for $230 in Gioia Tauro.",
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $100 in Le Havre.",
+        "Bought Wine for $100 in Le Havre."
+      ]
+    },
+    "Player 2": {
+      "money": 360,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": [
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $170 in Valencia.",
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $170 in Valencia.",
+        "Bought Olive Oil for $240 in Valencia.",
+        "Sold Olive Oil for $240 in Valencia.",
+        "Bought Wine for $100 in Le Havre.",
+        "Bought Wine for $100 in Le Havre.",
+        "Sold Wine for $170 in Valencia.",
+        "Sold Wine for $170 in Valencia.",
+        "Bought Textiles for $210 in Le Havre.",
+        "Sold Textiles for $190 in Hamburg.",
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        },
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        }
+      ]
+    },
+    "Player 3": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": [
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        },
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        }
+      ]
+    },
+    "Player 4": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": [
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        },
+        {
+          "type": "admin_adjust",
+          "delta": 0
+        }
+      ]
+    }
+  },
+  "selected_city": "Hamburg",
+  "selected_player": "Player 1",
+  "city_prices": {
+    "Le Havre": {
+      "Electronics": 280,
+      "Textiles": 210,
+      "Wine": 100,
+      "Furniture": 320
+    },
+    "Hamburg": {
+      "Electronics": 300,
+      "Textiles": 190,
+      "Coffee": 150,
+      "Cars": 650
+    },
+    "Rotterdam": {
+      "Grain": 110,
+      "Electronics": 290,
+      "Chemicals": 260,
+      "Flowers": 180
+    },
+    "Antwerp": {
+      "Diamonds": 900,
+      "Chemicals": 250,
+      "Chocolate": 220
+    },
+    "Gdynia": {
+      "Timber": 140,
+      "Fish": 120,
+      "Machinery": 330
+    },
+    "Valencia": {
+      "Fruit": 130,
+      "Olive Oil": 240,
+      "Wine": 170
+    },
+    "Gioia Tauro": {
+      "Olive Oil": 230,
+      "Textiles": 200,
+      "Furniture": 310
+    }
+  },
+  "breaking_news": "",
+  "closed_cities": [
+    "Rotterdam"
+  ]
+}
