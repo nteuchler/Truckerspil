@@ -382,6 +382,59 @@ def money_series():
         series[name] = sorted(buckets.items())
     return jsonify(series)
 
+# ------------------------------------------------------------------
+#  ADD a player
+# ------------------------------------------------------------------
+@app.route('/add_player', methods=['POST'])
+def add_player():
+    name = request.form.get('new_player_name', '').strip()
+    if not name or name in players:
+        return redirect(url_for('admin'))
+    players[name] = {
+        "money": 100,
+        "capacity": 2,
+        "cargo": ["", ""],
+        "transaction_log": []
+    }
+    save_game_state()
+    return redirect(url_for('admin'))
+
+
+# ------------------------------------------------------------------
+#  RENAME a player
+# ------------------------------------------------------------------
+@app.route('/rename_player', methods=['POST'])
+def rename_player():
+    old = request.form.get('old_name')
+    new = request.form.get('new_name', '').strip()
+    if (not old or not new or
+            old not in players or
+            new in players):
+        return redirect(url_for('admin'))
+
+    players[new] = players.pop(old)
+    global selected_player
+    if selected_player == old:
+        selected_player = new
+    save_game_state()
+    return redirect(url_for('admin'))
+
+
+# ------------------------------------------------------------------
+#  DELETE a player
+# ------------------------------------------------------------------
+@app.route('/delete_player', methods=['POST'])
+def delete_player():
+    name = request.form.get('delete_player_name')
+    if name in players:
+        players.pop(name)
+        global selected_player
+        if selected_player == name:
+            # pick the first remaining name or blank if none
+            selected_player = next(iter(players), '')
+        save_game_state()
+    return redirect(url_for('admin'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

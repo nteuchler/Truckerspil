@@ -63,23 +63,60 @@
     </ul>
     <button type="submit">Apply</button>
 </form>
-<h2>Adjust Player Money</h2>
-<form action="/adjust_money" method="POST">
-  <table>
-    <tr><th>Player</th><th>Current €</th><th>Change (±)</th></tr>
-    {% for name, pdata in players.items() %}
-      <tr>
-        <td>{{ name }}</td>
-        <td>{{ pdata.money }}</td>
-        <td>
-          <!-- positive to give, negative to deduct -->
-          <input type="number" name="{{ name }}" value="0" style="width:6em;">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
-  <button type="submit">Apply</button>
+<h2>Manage Players</h2>
+<table>
+  <tr>
+    <th>Player</th>
+    <th>Current&nbsp;€</th>
+    <th>Give&nbsp;/&nbsp;Take (±)</th>
+    <th>Rename to…</th>
+    <th>Delete</th>
+  </tr>
+
+  {% for name, pdata in players.items() %}
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ pdata.money }}</td>
+
+    <!-- Change money -->
+    <td>
+      <form action="/adjust_money" method="POST" style="display:inline;">
+        <input type="number" name="{{ name }}" value="0" style="width:6em;">
+        <button type="submit">Apply</button>
+      </form>
+    </td>
+
+    <!-- Rename -->
+    <td>
+      <form action="/rename_player" method="POST" style="display:inline;">
+        <input type="hidden" name="old_name" value="{{ name }}">
+        <input type="text"   name="new_name" placeholder="New name" style="width:8em;">
+        <button type="submit">Rename</button>
+      </form>
+    </td>
+
+    <!-- Delete -->
+    <td>
+      <form action="/delete_player" method="POST"
+            style="display:inline;"
+            onsubmit="return confirm('Delete {{ name }} permanently?');">
+        <input type="hidden" name="delete_player_name" value="{{ name }}">
+        <button type="submit">🗑️</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+
+
+<h2>Add Player</h2>
+<form action="/add_player" method="POST">
+    <input type="text" name="new_player_name" placeholder="New player name" required>
+    <button type="submit">Add</button>
 </form>
+
 
 <h2>Reset / New Game</h2>
 <form action="/reset_game" method="POST"

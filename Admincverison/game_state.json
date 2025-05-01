@@ -1,45 +1,5 @@
 {
   "players": {
-    "Player 1": {
-      "money": 56,
-      "capacity": 2,
-      "cargo": [
-        "Textiles",
-        "Textiles"
-      ],
-      "transaction_log": [
-        "Bought Textiles for \u20ac22 in Le Havre.",
-        {
-          "ts": "2025-05-01T13:51:07+00:00",
-          "money": 78
-        },
-        "Bought Textiles for \u20ac22 in Le Havre.",
-        {
-          "ts": "2025-05-01T13:51:08+00:00",
-          "money": 56
-        },
-        "Sold Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T13:51:18+00:00",
-          "money": 76
-        },
-        "Sold Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T13:51:19+00:00",
-          "money": 96
-        },
-        "Bought Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T13:58:49+00:00",
-          "money": 76
-        },
-        "Bought Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T13:58:49+00:00",
-          "money": 56
-        }
-      ]
-    },
     "Player 2": {
       "money": 100,
       "capacity": 2,
@@ -50,26 +10,45 @@
       "transaction_log": []
     },
     "Player 3": {
-      "money": 60,
+      "money": 100,
       "capacity": 2,
       "cargo": [
-        "Textiles",
-        "Textiles"
+        "",
+        ""
       ],
       "transaction_log": [
         "Bought Textiles for \u20ac20 in Antwerp.",
         {
-          "ts": "2025-05-01T14:00:18+00:00",
+          "ts": "2025-05-01T14:28:01+00:00",
           "money": 80
         },
-        "Bought Textiles for \u20ac20 in Antwerp.",
+        "Bought Chemicals for \u20ac62 in Antwerp.",
         {
-          "ts": "2025-05-01T14:00:18+00:00",
-          "money": 60
+          "ts": "2025-05-01T14:28:02+00:00",
+          "money": 18
+        },
+        "Sold Textiles for \u20ac20 in Antwerp.",
+        {
+          "ts": "2025-05-01T14:28:06+00:00",
+          "money": 38
+        },
+        "Sold Chemicals for \u20ac62 in Antwerp.",
+        {
+          "ts": "2025-05-01T14:28:07+00:00",
+          "money": 100
         }
       ]
     },
     "Player 4": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    },
+    "makralla": {
       "money": 100,
       "capacity": 2,
       "cargo": [
