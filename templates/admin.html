@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <h2>Update Prices</h2>
+    <form action="/admin" method="POST">
+        <label for="city">Select City:</label>
+        <select name="city" id="city" onchange="this.form.submit()">
+            <option value="" disabled selected>Select a city</option>
+            {% for city in cities %}
+                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_city %}
+    <form action="/update_prices" method="POST">
+        <input type="hidden" name="city" value="{{ selected_city }}">
+        <h3>Prices in {{ selected_city }}</h3>
+        <ul>
+            {% for item, price in city_prices[selected_city].items() %}
+                <li>
+                    {{ item }}: 
+                    <input type="number" name="{{ item }}" value="{{ price }}" required>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Update Prices</button>
+    </form>
+    {% else %}
+        <p>Please select a city to view and update prices.</p>
+    {% endif %}
+
+    <h2>Send Breaking News</h2>
+    <form action="/push_news" method="POST">
+        <label for="news_message">Breaking News:</label>
+        <textarea name="news_message" id="news_message" rows="4" cols="50"></textarea>
+        <br>
+        <button type="submit">Push News</button>
+    </form>
+
+
+    <h2>Open / Close Cities</h2>
+<form action="/update_city_status" method="POST">
+    <ul>
+    {% for city in cities %}
+        <li>
+            <label>
+                <input type="checkbox"
+                       name="closed_cities"
+                       value="{{ city }}"
+                       {% if city in closed_cities %}checked{% endif %}>
+                {{ city }}
+            </label>
+        </li>
+    {% endfor %}
+    </ul>
+    <button type="submit">Apply</button>
+</form>
+<h2>Manage Players</h2>
+<table>
+  <tr>
+    <th>Player</th>
+    <th>Current&nbsp;€</th>
+    <th>Give&nbsp;/&nbsp;Take (±)</th>
+    <th>Rename to…</th>
+    <th>Delete</th>
+  </tr>
+
+  {% for name, pdata in players.items() %}
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ pdata.money }}</td>
+
+    <!-- Change money -->
+    <td>
+      <form action="/adjust_money" method="POST" style="display:inline;">
+        <input type="number" name="{{ name }}" value="0" style="width:6em;">
+        <button type="submit">Apply</button>
+      </form>
+    </td>
+
+    <!-- Rename -->
+    <td>
+      <form action="/rename_player" method="POST" style="display:inline;">
+        <input type="hidden" name="old_name" value="{{ name }}">
+        <input type="text"   name="new_name" placeholder="New name" style="width:8em;">
+        <button type="submit">Rename</button>
+      </form>
+    </td>
+
+    <!-- Delete -->
+    <td>
+      <form action="/delete_player" method="POST"
+            style="display:inline;"
+            onsubmit="return confirm('Delete {{ name }} permanently?');">
+        <input type="hidden" name="delete_player_name" value="{{ name }}">
+        <button type="submit">🗑️</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+
+
+<h2>Add Player</h2>
+<form action="/add_player" method="POST">
+    <input type="text" name="new_player_name" placeholder="New player name" required>
+    <button type="submit">Add</button>
+</form>
+
+
+<h2>Reset / New Game</h2>
+<form action="/reset_game" method="POST"
+      onsubmit="return confirm('Really reset the entire game? All progress is lost.');">
+    <button type="submit">Reset Game</button>
+</form>
+
+<h2>Player Money over Time</h2>
+<canvas id="moneyChart" height="260"></canvas>
+
+<!-- Luxon first (provides DateTime) -->
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+
+<!-- Chart.js core -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Luxon adapter for Chart.js  -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+
+
+<script>
+const ctx = document.getElementById('moneyChart');
+let chart = null;
+
+// Fetch the 1-minute-binned series that the Flask endpoint returns
+async function fetchSeries() {
+    const r  = await fetch('/money_series');
+    const all = await r.json();           // { "Player 1": [["2025-05-01T14:32:00Z", 110], ...], … }
+
+    // Convert to Chart.js datasets
+    return Object.entries(all).map(([player, pts]) => ({
+        label: player,
+        data: pts.map(p => ({x: p[0], y: p[1]})),  // Luxon adapter parses the ISO strings
+        fill: false,
+        tension: 0.1
+    }));
+}
+
+async function drawOrUpdate() {
+    const datasets = await fetchSeries();
+
+    if (!chart) {                          // first time: create the chart
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: { datasets },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
+                        title: { display: true, text: 'UTC time' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '€' }
+                    }
+                },
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    } else {                               // subsequent refreshes
+        chart.data.datasets = datasets;
+        chart.update();
+    }
+}
+
+// initial draw, then refresh every 30 s
+drawOrUpdate();
+setInterval(drawOrUpdate, 30_000);
+</script>
+
+
+
+<a href="/">Back to Game</a>
+</body>
+</html>
