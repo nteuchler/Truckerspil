@@ -307,10 +307,10 @@ def adjust_money():
             continue            # ignore blanks / bad input
         players[player_name]['money'] += delta
         # optional audit log:
-        players[player]['transaction_log'].append(
+        players[player_name]['transaction_log'].append(
             f"Admin adjustment: €{delta:+d}"
         )
-        players[player]['transaction_log'].append(
+        players[player_name]['transaction_log'].append(
             {"ts": iso_now(), "money": players[player]['money']}
         )
         save_game_state()
