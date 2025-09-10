@@ -1,136 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cargo Space Shop</title>
-    <body>
-        <h1>Welcome to your trucking company</h1>
-    
-        {% if breaking_news %}
-            <h2 style="color: red;">Breaking News: {{ breaking_news }}</h2>
-        {% endif %}
-        
-        <!-- The rest of your index.html content -->
-    </body>
-    
-    <script>
-        function buyItem(form) {
-            const formData = new FormData(form);
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();  // Refresh the page on success
-                } else {
-                    alert(data.message);  // Show error message in a popup
-                }
-            });
-            return false;  // Prevent default form submission
-        }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trucker Tycoon</title>
 
-        function sellItem(form) {
-            const formData = new FormData(form);
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();  // Refresh the page on success
-                } else {
-                    alert(data.message);  // Show error message in a popup
-                }
-            });
-            return false;  // Prevent default form submission
-        }
+    <!-- global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-        function clearItem(form) {
-            const formData = new FormData(form);
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();  // Refresh the page on success
-                } else {
-                    alert(data.message);  // Show error message in a popup
-                }
-            });
-            return false;  // Prevent default form submission
-        }
-    </script>
+    <!-- fixed red breaking-news bar (kept inline so it overrides) -->
+    <style>
+      #breaking-news{
+        position:fixed;top:0;left:0;width:100%;
+        background:#ffe5e5;color:#c00;font-weight:700;text-align:center;
+        padding:.5em 0;z-index:1000;display:none
+      }
+      body.has-banner{margin-top:3em}
+    </style>
 </head>
+
 <body>
 
-    <!-- Dropdown to select the player -->
+<header>
+  <img src="https://images.ctfassets.net/grb5fvwhwnyo/5qdng82bOC9cvCh8fvhP5v/c7b0ddc45e27e433ba62e1b792d87d99/card-driverless-trucks-in-logistics.jpg?w=718&fm=webp"
+       alt="Long-haul truck driving at dusk">
+  <h1>🚚 Trucker Tycoon</h1>
+</header>
+
+<!-- BREAKING NEWS BANNER -->
+<div id="breaking-news"></div>
+
+<main>
+  <!-- Player selector -->
+  <section class="card">
+    <h2>Driver</h2>
     <form action="/set_player" method="POST">
-        <label for="player">Choose a player:</label>
-        <select name="player" id="player" onchange="this.form.submit()">
-            {% for player in players %}
-                <option value="{{ player }}" {% if player == selected_player %}selected{% endif %}>{{ player }}</option>
-            {% endfor %}
+        <select name="player" onchange="this.form.submit()">
+          {% for player in players %}
+            <option value="{{ player }}"
+                    {% if player == selected_player %}selected{% endif %}>{{ player }}</option>
+          {% endfor %}
         </select>
     </form>
+    <p style="margin-top:.4rem">Current player: <strong>{{ selected_player }}</strong></p>
+  </section>
 
-    <h2>Current Player: {{ selected_player }}</h2>
+  <!-- Rig info -->
+  <section class="card">
+    <h2>Your Rig</h2>
+    <p>Capacity: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Money: €{{ money }}</p>
+  </section>
 
-    <!-- Dropdown to select the city -->
+  <!-- City navigation -->
+  <section class="card">
+    <h2>Navigate</h2>
     <form action="/set_city" method="POST">
-        <label for="city">Choose a city:</label>
-        <select name="city" id="city" onchange="this.form.submit()">
-            {% for city in cities %}
-                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
-            {% endfor %}
+        <select name="city" onchange="this.form.submit()">
+          {% for city in cities %}
+            <option value="{{ city }}"
+                    {% if city == selected_city %}selected{% endif %}
+                    {% if city in closed_cities %}disabled{% endif %}>
+              {{ city }}{% if city in closed_cities %} (Closed){% endif %}
+            </option>
+          {% endfor %}
         </select>
     </form>
+    <p style="margin-top:.4rem">Current city: <strong>{{ selected_city }}</strong></p>
+  </section>
 
-    <h2>Current City: {{ selected_city }}</h2>
-    <h2>Current Money: ${{ money }}</h2>
+  <!-- Marketplace or Truck-store -->
+  {% if selected_city == 'Truck Store' %}
+  <section class="card">
+    <h2>Truck Store</h2>
+    <p>Your current truck can carry {{ capacity }} pallets.</p>
+    <p>Upgrade to {{ capacity + 1 }} pallets for €{{ upgrade_cost }}?</p>
+    <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
+        <button type="submit">Buy Upgrade</button>
+    </form>
+  </section>
+  {% else %}
+  <section class="card">
+    <h2>Marketplace – {{ selected_city }}</h2>
+    <ul>
+      {% for item, price in items.items() %}
+        <li style="margin:.2rem 0">
+          {{ item }} – €{{ price }}
+          <form action="/buy" method="POST" style="display:inline" onsubmit="return buyItem(this);">
+              <input type="hidden" name="item" value="{{ item }}">
+              <button type="submit">Buy</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
+  <!-- Cargo spaces -->
+  <section class="card">
     <h2>Cargo Spaces</h2>
     <ul>
-        {% for space in cargo %}
-            <li>
-                Cargo Space {{ loop.index }}: {{ space if space else 'Empty' }}
-                {% if space %}
-                <form action="/sell" method="POST" style="display:inline;" onsubmit="return sellItem(this);">
-                    <input type="hidden" name="space" value="{{ loop.index }}">
-                    <button type="submit">Sell</button>
-                </form>
-<!--                 <form action="/clear" method="POST" style="display:inline;" onsubmit="return clearItem(this);">
-                    <input type="hidden" name="space" value="{{ loop.index }}">
-                    <button type="submit">Clear</button>
-                </form> -->
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+      {% for space in cargo %}
+        <li style="margin:.2rem 0">
+          Space&nbsp;{{ loop.index }}:
+          {{ space if space else 'Empty' }}
 
-    <h2>Items for Sale</h2>
+          {% if space %}
+            <form action="/sell" method="POST" style="display:inline" onsubmit="return sellItem(this);">
+                <input type="hidden" name="space" value="{{ loop.index }}">
+                <button type="submit">Sell</button>
+            </form>
+            <form action="/clear" method="POST" style="display:inline" onsubmit="return clearItem(this);">
+                <input type="hidden" name="space" value="{{ loop.index }}">
+                <button type="submit">Clear</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- Transaction log -->
+  <section class="card">
+    <h2>Trip Log</h2>
     <ul>
-        {% for item, price in items.items() %}
-            <li>{{ item }} - ${{ price }}
-                <form action="/buy" method="POST" style="display:inline;" onsubmit="return buyItem(this);">
-                    <input type="hidden" name="item" value="{{ item }}">
-                    <button type="submit">Buy</button>
-                </form>
-            </li>
-        {% endfor %}
+      {% for entry in log %}
+        <li style="margin:.15rem 0">{{ entry }}</li>
+      {% endfor %}
     </ul>
+  </section>
 
-    <h2>Transaction Log</h2>
-    <ul>
-        {% for log_entry in log %}
-            <li>{{ log_entry }}</li>
-        {% endfor %}
-    </ul>
+  <!-- Flavour text -->
+  <section class="card">
+    <p style="font-style:italic;color:#555">
+      “From the misty docks of Le Havre to the sun-soaked quay of Valencia,
+       fortune favours the fastest rig. Plan smart, drive hard, and remember:
+       dead diesel tells no tales.”
+    </p>
+  </section>
+</main>
 
+<!-- ===== Scripts ===== -->
+<script>
+/* --- BREAKING-NEWS polling (unchanged) --- */
+let currentNews = {{ breaking_news|tojson }};
+const banner = document.getElementById('breaking-news');
+const bodyEl = document.body;
+function renderBanner(n){ if(n){ banner.textContent = `Breaking News: ${n}`; banner.style.display='block'; bodyEl.classList.add('has-banner'); }
+                          else { banner.style.display='none'; bodyEl.classList.remove('has-banner'); } }
+renderBanner(currentNews);
+async function refreshNews(){
+  try{ const r = await fetch('/breaking_news'); const d = await r.json();
+       if(d.news !== currentNews){ currentNews = d.news; renderBanner(currentNews);} }
+  catch(_){}
+}
+setInterval(refreshNews,5000);
+
+/* --- Buy / Sell / Clear helpers (unchanged) --- */
+function buyItem(f){return postForm(f);}
+function sellItem(f){return postForm(f);}
+function clearItem(f){return postForm(f);}
+function postForm(form){
+  fetch(form.action,{method:'POST',body:new FormData(form)})
+    .then(r=>r.json()).then(d=>{ if(d.success){location.reload();} else{alert(d.message);} });
+  return false;
+}
+</script>
 </body>
 </html>
