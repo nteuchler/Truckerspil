@@ -311,7 +311,7 @@ def adjust_money():
             f"Admin adjustment: €{delta:+d}"
         )
         players[player_name]['transaction_log'].append(
-            {"ts": iso_now(), "money": players[player]['money']}
+            {"ts": iso_now(), "money": players[player_name]['money']}
         )
         save_game_state()
     return redirect(url_for('admin'))
