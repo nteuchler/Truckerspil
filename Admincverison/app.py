@@ -3,7 +3,7 @@ from pathlib import Path
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import copy
 from datetime import datetime, timezone
-
+import os
 
 
 app = Flask(__name__)
@@ -437,4 +437,7 @@ def delete_player():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+        port = int(os.environ.get("PORT", 5000))
+    # bind to 0.0.0.0 and use Render's $PORT
+    app.run(host="0.0.0.0", port=port, debug=False)
+
