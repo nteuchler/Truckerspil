@@ -48,13 +48,13 @@
       "transaction_log": []
     }
   },
-  "selected_city": "Le Havre",
+  "selected_city": "Hamburg",
   "selected_player": "Player 1",
   "city_prices": {
     "Le Havre": {
       "Electronics": 40,
       "Textiles": 22,
-      "Wine": 28,
+      "Wine": 200,
       "Machinery": 55
     },
     "Hamburg": {
@@ -96,5 +96,8 @@
     "Truck Store": {}
   },
   "breaking_news": "",
-  "closed_cities": []
+  "closed_cities": [
+    "Antwerp",
+    "Barcelona"
+  ]
 }
