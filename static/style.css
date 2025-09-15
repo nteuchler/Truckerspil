@@ -28,3 +28,5 @@ tr:nth-child(even){background:#f1f4f7}
 
 /* ====== Fixed breaking-news bar (already present) ====== */
 #breaking-news{background:#ffebee;color:#c62828;font-weight:700}
+
+#moneyChart { height: 320px; }
