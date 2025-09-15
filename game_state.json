@@ -1,6 +1,6 @@
 {
   "players": {
-    "Player 2": {
+    "Player 1": {
       "money": 100,
       "capacity": 2,
       "cargo": [
@@ -9,6 +9,26 @@
       ],
       "transaction_log": []
     },
+    "Player 2": {
+      "money": 102,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": [
+        "Admin adjustment: \u20ac+0",
+        {
+          "ts": "2025-09-15T11:26:58+00:00",
+          "money": 100
+        },
+        "Admin adjustment: \u20ac+2",
+        {
+          "ts": "2025-09-15T11:27:01+00:00",
+          "money": 102
+        }
+      ]
+    },
     "Player 3": {
       "money": 100,
       "capacity": 2,
@@ -16,28 +36,7 @@
         "",
         ""
       ],
-      "transaction_log": [
-        "Bought Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T14:28:01+00:00",
-          "money": 80
-        },
-        "Bought Chemicals for \u20ac62 in Antwerp.",
-        {
-          "ts": "2025-05-01T14:28:02+00:00",
-          "money": 18
-        },
-        "Sold Textiles for \u20ac20 in Antwerp.",
-        {
-          "ts": "2025-05-01T14:28:06+00:00",
-          "money": 38
-        },
-        "Sold Chemicals for \u20ac62 in Antwerp.",
-        {
-          "ts": "2025-05-01T14:28:07+00:00",
-          "money": 100
-        }
-      ]
+      "transaction_log": []
     },
     "Player 4": {
       "money": 100,
@@ -47,19 +46,10 @@
         ""
       ],
       "transaction_log": []
-    },
-    "makralla": {
-      "money": 100,
-      "capacity": 2,
-      "cargo": [
-        "",
-        ""
-      ],
-      "transaction_log": []
     }
   },
-  "selected_city": "Genoa",
-  "selected_player": "Player 3",
+  "selected_city": "Le Havre",
+  "selected_player": "Player 1",
   "city_prices": {
     "Le Havre": {
       "Electronics": 40,
@@ -70,7 +60,7 @@
     "Hamburg": {
       "Automotive Parts": 48,
       "Textiles": 18,
-      "Coffee": 69,
+      "Coffee": 32,
       "Chemicals": 60
     },
     "Rotterdam": {
@@ -93,8 +83,8 @@
     },
     "Genoa": {
       "Machinery": 57,
-      "Automotive Parts": 20,
-      "Olive Oil": 69,
+      "Automotive Parts": 52,
+      "Olive Oil": 27,
       "Chemicals": 64
     },
     "Valencia": {

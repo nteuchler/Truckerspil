@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import copy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import os
 
 
@@ -370,26 +370,68 @@ def get_breaking_news():
     """Return the current breaking-news string for AJAX polling."""
     return jsonify(news=breaking_news)
 
+
+def iso_minute(dt: datetime) -> str:
+    return dt.replace(second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+
 @app.route('/money_series')
 def money_series():
-    """Return per-player balances aggregated to 1-minute buckets."""
+    """
+    Return per-player balances aggregated to 1-minute buckets,
+    filled forward over a configurable window (default 2 hours).
+    Query param: ?hours=24  (clamped 1..168)
+    """
+    try:
+        hours = int(request.args.get("hours", 2))
+    except Exception:
+        hours = 2
+    hours = max(1, min(hours, 168))
+
+    now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
+    start = now - timedelta(hours=hours)
+
+    def iso_minute(dt: datetime) -> str:
+        return dt.replace(second=0, microsecond=0).isoformat().replace("+00:00", "Z")
+
     series = {}
     for name, pdata in players.items():
-        # bucket: 'YYYY-MM-DDTHH:MM:00Z'
+        # Collect minute → money snapshots from the log
         buckets = {}
         for rec in pdata.get("transaction_log", []):
             if not isinstance(rec, dict):
-                continue            # skip legacy strings
-            minute = rec["ts"][:16] + ":00Z"   # strip seconds
-            buckets[minute] = rec["money"]     # keep last value in that minute
+                continue  # skip legacy string entries
+            try:
+                t = datetime.fromisoformat(rec["ts"].replace("Z", "+00:00"))
+            except Exception:
+                continue
+            t = t.replace(second=0, microsecond=0)
+            buckets[t] = rec["money"]  # last value in that minute wins
 
-        # always include 'now'
-        now_minute = iso_now()[:16] + ":00Z"
-        buckets.setdefault(now_minute, pdata["money"])
+        # Start from the last known balance BEFORE the window; otherwise leave undefined
+        last_val = None
+        if buckets:
+            before = [t for t in buckets.keys() if t < start]
+            if before:
+                last_val = buckets[max(before)]
 
-        # convert to sorted list for JS [ts, money]
-        series[name] = sorted(buckets.items())
-    return jsonify(series)
+        # Build minute-by-minute series; no prefill if no prior value
+        pts = []
+        t = start
+        while t <= now:
+            if t in buckets:
+                last_val = buckets[t]
+            # Append None (→ null in JSON) until we have the first known value
+            pts.append([iso_minute(t), last_val])
+            t += timedelta(minutes=1)
+
+        series[name] = pts
+
+
+    resp = jsonify(series)
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
+
 
 # ------------------------------------------------------------------
 #  ADD a player
@@ -405,6 +447,8 @@ def add_player():
         "cargo": ["", ""],
         "transaction_log": []
     }
+    players[name]["transaction_log"].append({"ts": iso_now(), "money": players[name]["money"]})
+
     save_game_state()
     return redirect(url_for('admin'))
 

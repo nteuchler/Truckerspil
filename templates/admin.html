@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+
 </head>
 <body>
     <h1>Admin Panel</h1>
@@ -117,77 +118,105 @@
     <button type="submit">Add</button>
 </form>
 
+<h2>Players Money Over Time</h2>
+<div id="moneyChartWrap" style="max-width:100%;min-height:320px;position:relative;">
+  <canvas id="moneyChart" style="width:100%;height:320px;"></canvas>
+</div>
+<p id="moneyChartMsg" style="font-size:.9rem;color:#666;margin-top:.3rem;"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script>
+(function () {
+  const msgEl   = document.getElementById('moneyChartMsg');
+  const canvas  = document.getElementById('moneyChart');
+  let chartRef  = null; // local (not window) reference
+
+  const showMsg = (t) => { if (msgEl) msgEl.textContent = t || ''; };
+
+  async function fetchSeries(hours = 1) {
+    const res  = await fetch(`/money_series?hours=${hours}`, { cache: 'no-store' });
+    const text = await res.text();
+    if (!res.ok) throw new Error(`HTTP ${res.status} – ${text.slice(0, 200)}`);
+    try { return JSON.parse(text); }
+    catch (e) { throw new Error(`JSON parse error: ${e.message}. Raw: ${text.slice(0, 200)}`); }
+  }
+
+  async function draw(hours = 1) {
+    try {
+      if (!canvas) { showMsg('Canvas not found.'); return; }
+
+      // wait a tick in case Chart.js is still loading with defer
+      if (!window.Chart) await new Promise(r => setTimeout(r, 50));
+      if (!window.Chart) { showMsg('Chart.js did not load.'); return; }
+
+      const data = await fetchSeries(hours);
+      const players = Object.keys(data || {});
+      if (!players.length) { showMsg('No players in response.'); return; }
+
+      const first  = players[0];
+      const labels = (data[first] || []).map(pt => pt[0]);
+      if (!labels.length) { showMsg('No time-series points yet. Make a transaction.'); return; }
+
+      const datasets = players.map((name, i) => ({
+        label: name,
+        data: (data[name] || []).map(pt => pt[1]),
+        fill: false,
+        borderColor: `hsl(${(i * 67) % 360}, 70%, 45%)`,
+        pointRadius: 0,
+        borderWidth: 2,
+        tension: 0.15
+      }));
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { showMsg('Could not get 2D context.'); return; }
+
+      // 🔧 Always recreate the chart to avoid "undefined labels" update issues
+      if (chartRef) { chartRef.destroy(); chartRef = null; }
+
+      chartRef = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: "Players' Balances (€)" },
+            tooltip: { mode: 'nearest', intersect: false }
+          },
+          scales: {
+            x: { ticks: { maxTicksLimit: 10 }, grid: { display: false } },
+            y: { beginAtZero: true, grace: 5 }
+          },
+          animation: false
+        }
+      });
+
+      showMsg('');
+    } catch (err) {
+      console.error(err);
+      showMsg(`Chart error: ${err.message}`);
+    }
+  }
+
+  const boot = () => { draw(1); setInterval(() => draw(1), 60000); };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+
+
+
 
 <h2>Reset / New Game</h2>
 <form action="/reset_game" method="POST"
       onsubmit="return confirm('Really reset the entire game? All progress is lost.');">
     <button type="submit">Reset Game</button>
 </form>
-
-<h2>Player Money over Time</h2>
-<canvas id="moneyChart" height="260"></canvas>
-
-<!-- Luxon first (provides DateTime) -->
-<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-
-<!-- Chart.js core -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-<!-- Luxon adapter for Chart.js  -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
-
-
-<script>
-const ctx = document.getElementById('moneyChart');
-let chart = null;
-
-// Fetch the 1-minute-binned series that the Flask endpoint returns
-async function fetchSeries() {
-    const r  = await fetch('/money_series');
-    const all = await r.json();           // { "Player 1": [["2025-05-01T14:32:00Z", 110], ...], … }
-
-    // Convert to Chart.js datasets
-    return Object.entries(all).map(([player, pts]) => ({
-        label: player,
-        data: pts.map(p => ({x: p[0], y: p[1]})),  // Luxon adapter parses the ISO strings
-        fill: false,
-        tension: 0.1
-    }));
-}
-
-async function drawOrUpdate() {
-    const datasets = await fetchSeries();
-
-    if (!chart) {                          // first time: create the chart
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: { datasets },
-            options: {
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: { unit: 'minute', displayFormats: { minute: 'HH:mm' } },
-                        title: { display: true, text: 'UTC time' }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: '€' }
-                    }
-                },
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    } else {                               // subsequent refreshes
-        chart.data.datasets = datasets;
-        chart.update();
-    }
-}
-
-// initial draw, then refresh every 30 s
-drawOrUpdate();
-setInterval(drawOrUpdate, 30_000);
-</script>
-
 
 
 <a href="/">Back to Game</a>
