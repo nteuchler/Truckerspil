@@ -237,13 +237,22 @@ def set_player():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    global selected_city
+    # When the city dropdown auto-submits, capture the choice
+    if request.method == 'POST':
+        chosen = request.form.get('city')
+        if chosen in city_prices:
+            selected_city = chosen
+            save_game_state()
+
     return render_template(
         'admin.html',
         cities=cities,
         city_prices=city_prices,
         breaking_news=breaking_news,
         closed_cities=closed_cities,
-        players=players        #  ← NEW
+        players=players,
+        selected_city=selected_city  # ← pass it to the template
     )
 @app.route('/update_prices', methods=['POST'])
 def update_prices():

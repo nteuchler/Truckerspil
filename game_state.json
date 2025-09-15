@@ -58,7 +58,7 @@
       "transaction_log": []
     }
   },
-  "selected_city": "Antwerp",
+  "selected_city": "Genoa",
   "selected_player": "Player 3",
   "city_prices": {
     "Le Havre": {
@@ -70,7 +70,7 @@
     "Hamburg": {
       "Automotive Parts": 48,
       "Textiles": 18,
-      "Coffee": 32,
+      "Coffee": 69,
       "Chemicals": 60
     },
     "Rotterdam": {
@@ -93,8 +93,8 @@
     },
     "Genoa": {
       "Machinery": 57,
-      "Automotive Parts": 52,
-      "Olive Oil": 27,
+      "Automotive Parts": 20,
+      "Olive Oil": 69,
       "Chemicals": 64
     },
     "Valencia": {

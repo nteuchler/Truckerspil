@@ -10,13 +10,13 @@
 
     <h2>Update Prices</h2>
     <form action="/admin" method="POST">
-        <label for="city">Select City:</label>
-        <select name="city" id="city" onchange="this.form.submit()">
-            <option value="" disabled selected>Select a city</option>
-            {% for city in cities %}
-                <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
-            {% endfor %}
-        </select>
+    <label for="city">Select City:</label>
+    <select name="city" id="city" onchange="this.form.submit()">
+        <option value="" disabled selected>Select a city</option>
+        {% for city in cities %}
+            <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+        {% endfor %}
+    </select>
     </form>
 
     {% if selected_city %}
