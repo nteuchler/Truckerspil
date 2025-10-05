@@ -1,1 +1,45 @@
+{
+  "players": {
+    "Player 1": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    },
+    "Player 2": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    },
+    "Player 3": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    },
+    "Player 4": {
+      "money": 100,
+      "capacity": 2,
+      "cargo": [
+        "",
+        ""
+      ],
+      "transaction_log": []
+    }
+  },
+  "selected_city": "Vogn Manden",
+  "selected_player": "Player 1",
+  "breaking_news": "",
+  "closed_cities": []
+}
 
