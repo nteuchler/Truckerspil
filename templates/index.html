@@ -12,7 +12,7 @@
     <style>
       #breaking-news{
         position:fixed;top:0;left:0;width:100%;
-        background:#ffe5e5;color:#c00;font-weight:700;text-align:center;
+        background:#ffe5e5;color:#c00;font-weight:1000;text-align:center;
         padding:.5em 0;z-index:1000;display:none
       }
       body.has-banner{margin-top:3em}
@@ -22,9 +22,9 @@
 <body>
 
 <header>
-  <img src="https://images.ctfassets.net/grb5fvwhwnyo/5qdng82bOC9cvCh8fvhP5v/c7b0ddc45e27e433ba62e1b792d87d99/card-driverless-trucks-in-logistics.jpg?w=718&fm=webp"
+  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.snl.no%2Fmedia%2F43340%2Fstandard_handel2.jpg&f=1&nofb=1&ipt=7f18055a1f9767483362d2751dd0d6acf1493c64eab4e44d123b5e6687fd138a"
        alt="Long-haul truck driving at dusk">
-  <h1>🚚 Trucker Tycoon</h1>
+  <h1>Handels spillet</h1>
 </header>
 
 <!-- BREAKING NEWS BANNER -->
@@ -33,7 +33,7 @@
 <main>
   <!-- Player selector -->
   <section class="card">
-    <h2>Driver</h2>
+    <h2>Spiller</h2>
     <form action="/set_player" method="POST">
         <select name="player" onchange="this.form.submit()">
           {% for player in players %}
@@ -47,13 +47,13 @@
 
   <!-- Rig info -->
   <section class="card">
-    <h2>Your Rig</h2>
-    <p>Capacity: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Money: €{{ money }}</p>
+    <h2>Din vogn</h2>
+    <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} Sølv</p>
   </section>
 
   <!-- City navigation -->
   <section class="card">
-    <h2>Navigate</h2>
+    <h2>By</h2>
     <form action="/set_city" method="POST">
         <select name="city" onchange="this.form.submit()">
           {% for city in cities %}
@@ -65,17 +65,17 @@
           {% endfor %}
         </select>
     </form>
-    <p style="margin-top:.4rem">Current city: <strong>{{ selected_city }}</strong></p>
+    <p style="margin-top:.4rem">Nuværende by: <strong>{{ selected_city }}</strong></p>
   </section>
 
   <!-- Marketplace or Truck-store -->
-  {% if selected_city == 'Truck Store' %}
+  {% if selected_city == 'Vogn Manden' %}
   <section class="card">
-    <h2>Truck Store</h2>
-    <p>Your current truck can carry {{ capacity }} pallets.</p>
-    <p>Upgrade to {{ capacity + 1 }} pallets for €{{ upgrade_cost }}?</p>
+    <h2>Vogn Manden</h2>
+    <p>Din vogn kan på bære {{ capacity }} sække varer.</p>
+    <p>opgrader til {{ capacity + 1 }} antal vare for {{ upgrade_cost }} Søv?</p>
     <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
-        <button type="submit">Buy Upgrade</button>
+        <button type="submit">Køb opgradering</button>
     </form>
   </section>
   {% else %}
@@ -84,10 +84,10 @@
     <ul>
       {% for item, price in items.items() %}
         <li style="margin:.2rem 0">
-          {{ item }} – €{{ price }}
+          {{ item }} – {{ price }} Sølv
           <form action="/buy" method="POST" style="display:inline" onsubmit="return buyItem(this);">
               <input type="hidden" name="item" value="{{ item }}">
-              <button type="submit">Buy</button>
+              <button type="submit">Køb</button>
           </form>
         </li>
       {% endfor %}
@@ -107,11 +107,11 @@
           {% if space %}
             <form action="/sell" method="POST" style="display:inline" onsubmit="return sellItem(this);">
                 <input type="hidden" name="space" value="{{ loop.index }}">
-                <button type="submit">Sell</button>
+                <button type="submit">Sælg</button>
             </form>
             <form action="/clear" method="POST" style="display:inline" onsubmit="return clearItem(this);">
                 <input type="hidden" name="space" value="{{ loop.index }}">
-                <button type="submit">Clear</button>
+                <button type="submit">Destruer</button>
             </form>
           {% endif %}
         </li>
@@ -132,9 +132,8 @@
   <!-- Flavour text -->
   <section class="card">
     <p style="font-style:italic;color:#555">
-      “From the misty docks of Le Havre to the sun-soaked quay of Valencia,
-       fortune favours the fastest rig. Plan smart, drive hard, and remember:
-       dead diesel tells no tales.”
+      “Fra Helsingørs toldby til Ribe’s brolagte torv vinder den, som kender vind og vej.
+      Planlæg klogt, hold hjulene rullende, og husk: tavse hjul bærer ingen fortjeneste.”
     </p>
   </section>
 </main>

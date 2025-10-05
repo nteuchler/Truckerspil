@@ -10,24 +10,13 @@
       "transaction_log": []
     },
     "Player 2": {
-      "money": 102,
+      "money": 100,
       "capacity": 2,
       "cargo": [
         "",
         ""
       ],
-      "transaction_log": [
-        "Admin adjustment: \u20ac+0",
-        {
-          "ts": "2025-09-15T11:26:58+00:00",
-          "money": 100
-        },
-        "Admin adjustment: \u20ac+2",
-        {
-          "ts": "2025-09-15T11:27:01+00:00",
-          "money": 102
-        }
-      ]
+      "transaction_log": []
     },
     "Player 3": {
       "money": 100,
@@ -48,56 +37,69 @@
       "transaction_log": []
     }
   },
-  "selected_city": "Hamburg",
+  "selected_city": "Vogn Manden",
   "selected_player": "Player 1",
   "city_prices": {
-    "Le Havre": {
-      "Electronics": 40,
-      "Textiles": 22,
-      "Wine": 200,
-      "Machinery": 55
+    "Ribe": {
+      "M\u00e6lk": 9,
+      "Hvede": 14,
+      "Mj\u00f8d": 21,
+      "Tekstiler": 24,
+      "K\u00f8d": 30,
+      "Vin": 40
     },
-    "Hamburg": {
-      "Automotive Parts": 48,
-      "Textiles": 18,
-      "Coffee": 32,
-      "Chemicals": 60
+    "Aarhus": {
+      "M\u00e6lk": 11,
+      "Hvede": 16,
+      "Mj\u00f8d": 23,
+      "Tekstiler": 27,
+      "K\u00f8d": 34,
+      "Vin": 46,
+      "Fisk": 59
     },
-    "Rotterdam": {
-      "Electronics": 42,
-      "Fruit": 26,
-      "Coffee": 30,
-      "Machinery": 58
+    "Roskilde": {
+      "Mj\u00f8d": 24,
+      "Tekstiler": 26,
+      "Silke": 74,
+      "M\u00f8bler": 88,
+      "Relikvier": 108,
+      "Rustninger": 147
     },
-    "Antwerp": {
-      "Chemicals": 62,
-      "Textiles": 20,
-      "Automotive Parts": 50,
-      "Beer": 25
+    "Helsing\u00f8r": {
+      "M\u00e6lk": 8,
+      "K\u00f8d": 33,
+      "Vin": 44,
+      "Fisk": 57,
+      "Silke": 70,
+      "M\u00f8bler": 85
     },
-    "Barcelona": {
-      "Wine": 24,
-      "Fruit": 22,
-      "Textiles": 19,
-      "Electronics": 45
+    "Odense": {
+      "Hvede": 17,
+      "Mj\u00f8d": 20,
+      "Tekstiler": 23,
+      "Vin": 38,
+      "Fisk": 52,
+      "Silke": 65
     },
-    "Genoa": {
-      "Machinery": 57,
-      "Automotive Parts": 52,
-      "Olive Oil": 27,
-      "Chemicals": 64
+    "Viborg": {
+      "K\u00f8d": 36,
+      "Vin": 47,
+      "Fisk": 61,
+      "M\u00f8bler": 90,
+      "Relikvier": 110,
+      "Rustninger": 150
     },
-    "Valencia": {
-      "Fruit": 20,
-      "Olive Oil": 25,
-      "Wine": 23,
-      "Textiles": 18
+    "Svendborg": {
+      "M\u00e6lk": 10,
+      "Hvede": 15,
+      "Mj\u00f8d": 22,
+      "Tekstiler": 25,
+      "K\u00f8d": 31,
+      "Vin": 41,
+      "Relikvier": 93
     },
-    "Truck Store": {}
+    "Vogn Manden": {}
   },
   "breaking_news": "",
-  "closed_cities": [
-    "Antwerp",
-    "Barcelona"
-  ]
+  "closed_cities": []
 }

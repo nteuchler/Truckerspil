@@ -12,17 +12,70 @@ app = Flask(__name__)
 #  Default data for a fresh game
 # ---------------------------------------------------------------------
 BACKUP_FILE = Path("game_state.json")
-
 DEFAULT_CITY_PRICES_EU = {
-    "Le Havre":   {"Electronics": 40, "Textiles": 22, "Wine": 28, "Machinery": 55},
-    "Hamburg":    {"Automotive Parts": 48, "Textiles": 18, "Coffee": 32, "Chemicals": 60},
-    "Rotterdam":  {"Electronics": 42, "Fruit": 26, "Coffee": 30, "Machinery": 58},
-    "Antwerp":    {"Chemicals": 62, "Textiles": 20, "Automotive Parts": 50, "Beer": 25},
-    "Barcelona":  {"Wine": 24, "Fruit": 22, "Textiles": 19, "Electronics": 45},
-    "Genoa":      {"Machinery": 57, "Automotive Parts": 52, "Olive Oil": 27, "Chemicals": 64},
-    "Valencia":   {"Fruit": 20, "Olive Oil": 25, "Wine": 23, "Textiles": 18},
-    "Truck Store": {}
+    "Ribe": {
+        "Mælk": 9,
+        "Hvede": 14,
+        "Mjød": 21,
+        "Tekstiler": 24,
+        "Kød": 30,
+        "Vin": 40,
+    },
+    "Aarhus": {
+        "Mælk": 11,
+        "Hvede": 16,
+        "Mjød": 23,
+        "Tekstiler": 27,
+        "Kød": 34,
+        "Vin": 46,
+        "Fisk": 59,
+    },
+    "Roskilde": {
+        "Mjød": 24,
+        "Tekstiler": 26,
+        "Silke": 74,
+        "Møbler": 88,
+        "Relikvier": 108,
+        "Rustninger": 147,
+    },
+    "Helsingør": {
+        "Mælk": 8,
+        "Kød": 33,
+        "Vin": 44,
+        "Fisk": 57,
+        "Silke": 70,
+        "Møbler": 85,
+    },
+    "Odense": {
+        "Hvede": 17,
+        "Mjød": 20,
+        "Tekstiler": 23,
+        "Vin": 38,
+        "Fisk": 52,
+        "Silke": 65,
+    },
+    "Viborg": {
+        "Kød": 36,
+        "Vin": 47,
+        "Fisk": 61,
+        "Møbler": 90,
+        "Relikvier": 110,
+        "Rustninger": 150,
+    },
+    "Svendborg": {
+        "Mælk": 10,
+        "Hvede": 15,
+        "Mjød": 22,
+        "Tekstiler": 25,
+        "Kød": 31,
+        "Vin": 41,
+        "Relikvier": 93,
+    },
+    "Vogn Manden": {
+
+    }
 }
+
 
 DEFAULT_PLAYERS = {
     f"Player {i}": {
@@ -59,14 +112,14 @@ def load_game_state():
 
     # Fill in any missing keys so old save files still work
     data.setdefault("players", DEFAULT_PLAYERS.copy())
-    data.setdefault("selected_city", "Le Havre")
+    data.setdefault("selected_city", "Odense")
     data.setdefault("selected_player", "Player 1")
     data.setdefault("city_prices", DEFAULT_CITY_PRICES_EU.copy())
     data.setdefault("breaking_news", "")
     data.setdefault("closed_cities", [])
-    # ---------- NEW: ensure Truck Store exists even in older saves ----------
-    if "Truck Store" not in data["city_prices"]:
-        data["city_prices"]["Truck Store"] = {}
+    # ---------- NEW: ensure Vogn Manden exists even in older saves ----------
+    if "Vogn Manden" not in data["city_prices"]:
+        data["city_prices"]["Vogn Manden"] = {}
     # -----------------------------------------------------------------------
 
     for p in data["players"].values():
@@ -327,8 +380,8 @@ def adjust_money():
 
 @app.route('/upgrade_truck', methods=['POST'])
 def upgrade_truck():
-    if selected_city != "Truck Store":
-        return jsonify(success=False, message="Upgrades only available in the Truck Store.")
+    if selected_city != "Vogn Manden":
+        return jsonify(success=False, message="Upgrades only available in the Vogn Manden.")
     player = players[selected_player]
     cost = next_upgrade_cost(player["capacity"])
     if player["money"] < cost:
