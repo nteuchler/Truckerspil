@@ -21,19 +21,34 @@
     </form>
 
     {% if selected_city %}
-    <form action="/update_prices" method="POST">
-        <input type="hidden" name="city" value="{{ selected_city }}">
-        <h3>Prices in {{ selected_city }}</h3>
-        <ul>
-            {% for item, price in city_prices[selected_city].items() %}
-                <li>
-                    {{ item }}: 
-                    <input type="number" name="{{ item }}" value="{{ price }}" required>
-                </li>
-            {% endfor %}
-        </ul>
-        <button type="submit">Update Prices</button>
-    </form>
+        {% if selected_city == 'Vogn Manden' %}
+        <form action="/update_vogn_settings" method="POST">
+            <h3>Vognmanden Settings</h3>
+            <div>
+                <label for="start_cost">Start cost (first upgrade):</label>
+                <input type="number" id="start_cost" name="start_cost" value="{{ vogn_settings['start_cost'] }}" min="0" required>
+            </div>
+            <div>
+                <label for="upgrade_step">Upgrade step (per extra slot):</label>
+                <input type="number" id="upgrade_step" name="upgrade_step" value="{{ vogn_settings['upgrade_step'] }}" min="0" required>
+            </div>
+            <button type="submit">Update Vognmanden</button>
+        </form>
+        {% else %}
+        <form action="/update_prices" method="POST">
+            <input type="hidden" name="city" value="{{ selected_city }}">
+            <h3>Prices in {{ selected_city }}</h3>
+            <ul>
+                {% for item, price in city_prices[selected_city].items() %}
+                    <li>
+                        {{ item }}:
+                        <input type="number" name="{{ item }}" value="{{ price }}" required>
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="submit">Update Prices</button>
+        </form>
+        {% endif %}
     {% else %}
         <p>Please select a city to view and update prices.</p>
     {% endif %}

@@ -87,15 +87,22 @@ DEFAULT_PLAYERS = {
     for i in range(1, 5)
 }
 
+DEFAULT_VOGN_SETTINGS = {
+    "start_cost": 300,
+    "upgrade_step": 200,
+}
+
 # ---------------------------------------------------------------------
 #  Helper functions for persistence
 # ---------------------------------------------------------------------
 def next_upgrade_cost(capacity: int) -> int:
-    """
-    Pricing rule: +1 pallet costs €(200 * capacity – 100)
-    → 2→3 slots = €300, 3→4 = €500, 4→5 = €700, …
-    """
-    return 200 * capacity - 100
+    """Return cost for upgrading capacity by one slot."""
+    settings = globals().get("vogn_settings", DEFAULT_VOGN_SETTINGS)
+    start_cost = int(settings.get("start_cost", DEFAULT_VOGN_SETTINGS["start_cost"]))
+    upgrade_step = int(settings.get("upgrade_step", DEFAULT_VOGN_SETTINGS["upgrade_step"]))
+    if capacity <= 2:
+        return start_cost
+    return start_cost + upgrade_step * (capacity - 2)
 
 def iso_now():
     """UTC ISO-8601 timestamp, seconds only."""
@@ -117,6 +124,7 @@ def load_game_state():
     data.setdefault("city_prices", DEFAULT_CITY_PRICES_EU.copy())
     data.setdefault("breaking_news", "")
     data.setdefault("closed_cities", [])
+    data.setdefault("vogn_settings", copy.deepcopy(DEFAULT_VOGN_SETTINGS))
     # ---------- NEW: ensure Vogn Manden exists even in older saves ----------
     if "Vogn Manden" not in data["city_prices"]:
         data["city_prices"]["Vogn Manden"] = {}
@@ -141,6 +149,7 @@ def save_game_state():
                 "city_prices": city_prices,
                 "breaking_news": breaking_news,
                 "closed_cities": closed_cities,
+                "vogn_settings": vogn_settings,
             },
             f,
             indent=2,
@@ -157,6 +166,7 @@ selected_player = _state["selected_player"]
 city_prices     = _state["city_prices"]
 breaking_news   = _state["breaking_news"]
 closed_cities   = _state["closed_cities"]
+vogn_settings   = _state["vogn_settings"]
 
 # Convenience list for the dropdown
 cities = list(city_prices.keys())
@@ -183,6 +193,16 @@ def index():
         closed_cities=closed_cities,
         capacity=player_data['capacity'],          # NEW
         upgrade_cost=next_upgrade_cost(player_data['capacity'])  # NEW 
+    )
+
+
+@app.route('/prices')
+def price_overview():
+    """Show all cities with their available goods and prices."""
+    return render_template(
+        'prices.html',
+        city_prices=city_prices,
+        closed_cities=closed_cities,
     )
 
 @app.route('/buy', methods=['POST'])
@@ -305,7 +325,8 @@ def admin():
         breaking_news=breaking_news,
         closed_cities=closed_cities,
         players=players,
-        selected_city=selected_city  # ← pass it to the template
+        selected_city=selected_city,  # ← pass it to the template
+        vogn_settings=vogn_settings,
     )
 @app.route('/update_prices', methods=['POST'])
 def update_prices():
@@ -329,6 +350,24 @@ def update_prices():
         city_prices[city].update(updated_prices)
         save_game_state()  # Optionally save the state after the update
     
+    return redirect(url_for('admin'))
+
+
+@app.route('/update_vogn_settings', methods=['POST'])
+def update_vogn_settings():
+    global vogn_settings
+    start_raw = (request.form.get('start_cost') or '').strip()
+    step_raw = (request.form.get('upgrade_step') or '').strip()
+    try:
+        start_cost = int(start_raw)
+        upgrade_step = int(step_raw)
+    except ValueError:
+        return redirect(url_for('admin'))
+    if start_cost < 0 or upgrade_step < 0:
+        return redirect(url_for('admin'))
+    vogn_settings['start_cost'] = start_cost
+    vogn_settings['upgrade_step'] = upgrade_step
+    save_game_state()
     return redirect(url_for('admin'))
 
 
@@ -405,7 +444,7 @@ def upgrade_truck():
 @app.route('/reset_game', methods=['POST'])
 def reset_game():
     global players, selected_city, selected_player
-    global city_prices, breaking_news, closed_cities
+    global city_prices, breaking_news, closed_cities, vogn_settings
 
     # Fresh deep copies so we don't accidentally share state
     players         = copy.deepcopy(DEFAULT_PLAYERS)
@@ -414,6 +453,7 @@ def reset_game():
     city_prices     = copy.deepcopy(DEFAULT_CITY_PRICES_EU)
     breaking_news   = ""
     closed_cities   = []
+    vogn_settings   = copy.deepcopy(DEFAULT_VOGN_SETTINGS)
 
     save_game_state()
     return redirect(url_for('admin'))

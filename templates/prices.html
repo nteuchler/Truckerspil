@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trucker Tycoon – Priser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      .nav-link{margin-bottom:0.6rem}
+      h2 small{font-size:0.75em;font-weight:normal;color:#8b2c2c;margin-left:0.4rem}
+      .prices-table td:first-child{text-align:left}
+    </style>
+</head>
+<body>
+<header>
+  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.snl.no%2Fmedia%2F43340%2Fstandard_handel2.jpg&f=1&nofb=1&ipt=7f18055a1f9767483362d2751dd0d6acf1493c64eab4e44d123b5e6687fd138a" alt="Long-haul truck driving at dusk">
+  <h1>Handels spillet</h1>
+</header>
+
+<main>
+  <section class="card">
+    <a class="nav-link" href="{{ url_for('index') }}">Tilbage til spillet</a>
+    <h2>Markedsoversigt</h2>
+    <p>Her kan du se alle varer og priser i hver by, så ruten kan planlægges på forhånd.</p>
+  </section>
+
+  {% for city, goods in city_prices|dictsort %}
+    <section class="card">
+      <h2>
+        {{ city }}
+        {% if city in closed_cities %}
+          <small>(Lukket)</small>
+        {% endif %}
+      </h2>
+      {% if goods %}
+        <table class="prices-table">
+          <thead>
+            <tr>
+              <th style="text-align:left">Vare</th>
+              <th>Pris (Sølv)</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for item, price in goods|dictsort %}
+            <tr>
+              <td>{{ item }}</td>
+              <td>{{ price }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>Ingen varer til salg i øjeblikket.</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+</main>
+
+</body>
+</html>

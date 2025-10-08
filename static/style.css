@@ -66,6 +66,19 @@ button{
 }
 button:hover{background:#7f4a26;cursor:pointer}
 
+/* ====== Simple navigation link ====== */
+a.nav-link{
+  display:inline-block;
+  margin:.3rem 0;
+  color:#f6f0e8;
+  background:#6b3e1e;
+  padding:.45rem .9rem;
+  border-radius:6px;
+  border:1.5px solid #b68b4c;
+  text-decoration:none;
+}
+a.nav-link:hover{background:#7f4a26}
+
 /* ====== Table (admin) ====== */
 table{width:100%;border-collapse:collapse;margin:.3rem 0;font-size:.95rem}
 th,td{padding:.5rem .3rem;text-align:center;border-bottom:1px solid #e0cfac}
