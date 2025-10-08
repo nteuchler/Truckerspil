@@ -409,7 +409,7 @@ def reset_game():
 
     # Fresh deep copies so we don't accidentally share state
     players         = copy.deepcopy(DEFAULT_PLAYERS)
-    selected_city   = "Le Havre"
+    selected_city   = next(iter(DEFAULT_CITY_PRICES_EU))
     selected_player = "Player 1"
     city_prices     = copy.deepcopy(DEFAULT_CITY_PRICES_EU)
     breaking_news   = ""
