@@ -48,7 +48,7 @@
 
   <!-- Rig info -->
   <section class="card">
-    <h2>Din vogn</h2>
+    <h2>Dit rumskib</h2>
     <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} Schmeckels</p>
   </section>
 
@@ -73,9 +73,9 @@
   <!-- Marketplace or Truck-store -->
   {% if selected_city == "Galactic Truckstop" %}
   <section class="card">
-    <h2>Vogn Manden</h2>
-    <p>Din vogn kan på bære {{ capacity }} sække varer.</p>
-    <p>opgrader til {{ capacity + 1 }} antal vare for {{ upgrade_cost }} Søv?</p>
+    <h2>Galactic Truckstop</h2>
+    <p>Din rumskib kan på bære {{ capacity }} stk vare.</p>
+    <p>opgrader til {{ capacity + 1 }} antal vare for {{ upgrade_cost }} Schmeckels?</p>
   <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
     <input type="hidden" name="player" value="{{ selected_player }}">
     <button type="submit">Køb opgradering</button>
