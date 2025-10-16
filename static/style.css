@@ -1,91 +1,15 @@
-/* ====== Universal reset ====== */
-*{box-sizing:border-box;margin:0;padding:0;font-family:'IM Fell English', serif}
-body{
-  background:#f6f0e8;
-  color:#2b2118;
-  line-height:1.5;
-  background-image:
-    radial-gradient(#e8dcc5 1px, transparent 1px),
-    radial-gradient(#e8dcc5 1px, transparent 1px),
-    linear-gradient(#f2e6d3, #f6f0e8);
-  background-position: 0 0, 8px 8px, 0 0;
-  background-size: 16px 16px,16px 16px,100% 100%;
+body {
+  background: radial-gradient(circle at center, #050510 0%, #02020a 100%);
+  color: #e0f7ff;
+  font-family: 'Share Tech Mono', monospace;
 }
-
-/* ====== Header hero ====== */
-header{background:#3b2a1a;color:#f8f4ec;text-align:center;padding:0;position:relative;border-bottom:4px solid #b68b4c}
-header img{width:100%;height:160px;object-fit:cover;opacity:.9;filter:grayscale(20%)}
-header h1{
-  position:absolute;top:0;left:0;width:100%;height:160px;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  font-family:'Cinzel', serif;
-  letter-spacing:1px;
-  font-size:clamp(24px,5vw,36px);
-  text-shadow:0 2px 2px #0003, 0 0 12px #f0d9a7;
-}
-
-/* ====== Content wrappers ====== */
-main{padding:1rem;display:flex;flex-direction:column;gap:1rem}
-.card{
-  background:#fbf6ec;
-  border:2px solid #b68b4c;
-  border-radius:10px;
-  padding:1rem;
-  box-shadow:0 3px 8px #0002, inset 0 0 30px #e9ddc7;
-}
-.card h2{
-  font-family:'Cinzel', serif;
-  font-size:1.15rem;
-  margin-bottom:.4rem;
-  color:#3b2a1a;
-}
-
-/* ====== Lists ====== */
-.card ul{list-style:disc;padding-left:1.25rem}
-.card li{padding:.15rem 0}
-
-/* ====== Forms & buttons ====== */
-select,input[type=text],input[type=number]{
-  width:100%;
-  padding:.45rem .6rem;
-  margin:.3rem 0;
-  border:1.5px solid #9c7a3c;
-  border-radius:6px;
-  background:#fffaf0;
-  color:#2b2118;
-  font-size:1rem;
-}
-button{
-  background:#6b3e1e;
-  color:#f6f0e8;
-  border:none;
-  padding:.5rem .9rem;
-  border-radius:6px;
-  font-size:1rem;
-  border:1.5px solid #b68b4c;
-}
-button:hover{background:#7f4a26;cursor:pointer}
-
-/* ====== Simple navigation link ====== */
-a.nav-link{
-  display:inline-block;
-  margin:.3rem 0;
-  color:#f6f0e8;
-  background:#6b3e1e;
-  padding:.45rem .9rem;
-  border-radius:6px;
-  border:1.5px solid #b68b4c;
-  text-decoration:none;
-}
-a.nav-link:hover{background:#7f4a26}
-
-/* ====== Table (admin) ====== */
-table{width:100%;border-collapse:collapse;margin:.3rem 0;font-size:.95rem}
-th,td{padding:.5rem .3rem;text-align:center;border-bottom:1px solid #e0cfac}
-tr:nth-child(even){background:#f7efdd}
-
-/* ====== Fixed breaking-news bar (already present) ====== */
-#breaking-news{background:#f0d9a7;color:#6b2c2c;font-weight:700;border-bottom:2px solid #b68b4c}
-
-/* ====== Chart sizing ====== */
-#moneyChart { height: 320px; }
+header{background:#0f0f33;color:#00ffea;text-align:center;padding:0;border-bottom:4px solid #00e0ff}
+header img{opacity:0.6;filter:brightness(50%) saturate(120%)}
+header h1{text-shadow:0 0 8px #00f0ff, 0 0 16px #00aaff;}
+.card{background:#101020;border:2px solid #00e0ff;box-shadow:0 0 15px #00c0ff33;}
+button{background:#00aaff;color:#fff;border:1.5px solid #00e0ff;}
+button:hover{background:#00ccff}
+a.nav-link{background:#00aaff;color:#fff;border:1.5px solid #00e0ff;}
+a.nav-link:hover{background:#00ccff}
+#breaking-news{background:#0f0f33;color:#00ffea;border-bottom:2px solid #00e0ff}
+tr:nth-child(even){background:#0f0f1e}

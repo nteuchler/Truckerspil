@@ -1,13 +1,24 @@
 {
   "players": {
     "Player 1": {
-      "money": 100,
+      "money": 60,
       "capacity": 2,
       "cargo": [
-        "",
-        ""
+        "Fleeb Juice",
+        "Fleeb Juice"
       ],
-      "transaction_log": []
+      "transaction_log": [
+        "Bought Fleeb Juice for \u20ac20 in Odense.",
+        {
+          "ts": "2025-10-16T15:33:13+00:00",
+          "money": 80
+        },
+        "Bought Fleeb Juice for \u20ac20 in Odense.",
+        {
+          "ts": "2025-10-16T15:33:15+00:00",
+          "money": 60
+        }
+      ]
     },
     "Player 2": {
       "money": 100,
@@ -19,13 +30,64 @@
       "transaction_log": []
     },
     "Player 3": {
-      "money": 100,
+      "money": 84,
       "capacity": 2,
       "cargo": [
-        "",
-        ""
+        "Plumbus",
+        "Plumbus"
       ],
-      "transaction_log": []
+      "transaction_log": [
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:33:46+00:00",
+          "money": 92
+        },
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:33:47+00:00",
+          "money": 84
+        },
+        "Sold Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:01+00:00",
+          "money": 92
+        },
+        "Sold Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:02+00:00",
+          "money": 100
+        },
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:04+00:00",
+          "money": 92
+        },
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:05+00:00",
+          "money": 84
+        },
+        "Sold Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:06+00:00",
+          "money": 92
+        },
+        "Sold Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:06+00:00",
+          "money": 100
+        },
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:08+00:00",
+          "money": 92
+        },
+        "Bought Plumbus for \u20ac8 in Helsing\u00f8r.",
+        {
+          "ts": "2025-10-16T15:34:08+00:00",
+          "money": 84
+        }
+      ]
     },
     "Player 4": {
       "money": 100,
@@ -37,73 +99,73 @@
       "transaction_log": []
     }
   },
-  "selected_city": "Vogn Manden",
-  "selected_player": "Player 1",
+  "selected_city": "Helsing\u00f8r",
+  "selected_player": "Player 3",
   "city_prices": {
     "Ribe": {
-      "M\u00e6lk": 9,
-      "Hvede": 14,
-      "Mj\u00f8d": 21,
-      "Tekstiler": 24,
-      "K\u00f8d": 30,
-      "Vin": 40
+      "Plumbus": 9,
+      "Mega Seeds": 14,
+      "Fleeb Juice": 21,
+      "Galactic Textiles": 24,
+      "Gromflomite Meat": 30,
+      "Glapflap Wine": 40
     },
     "Aarhus": {
-      "M\u00e6lk": 11,
-      "Hvede": 16,
-      "Mj\u00f8d": 23,
-      "Tekstiler": 27,
-      "K\u00f8d": 34,
-      "Vin": 46,
-      "Fisk": 59
+      "Plumbus": 11,
+      "Mega Seeds": 16,
+      "Fleeb Juice": 23,
+      "Galactic Textiles": 27,
+      "Gromflomite Meat": 34,
+      "Glapflap Wine": 46,
+      "Zigerion Fish": 59
     },
     "Roskilde": {
-      "Mj\u00f8d": 24,
-      "Tekstiler": 26,
-      "Silke": 74,
-      "M\u00f8bler": 88,
-      "Relikvier": 108,
-      "Rustninger": 147
+      "Fleeb Juice": 24,
+      "Galactic Textiles": 26,
+      "Quantum Silk": 74,
+      "Schmeckles Furniture": 88,
+      "Portal Relics": 108,
+      "Federation Armor": 147
     },
     "Helsing\u00f8r": {
-      "M\u00e6lk": 8,
-      "K\u00f8d": 33,
-      "Vin": 44,
-      "Fisk": 57,
-      "Silke": 70,
-      "M\u00f8bler": 85
+      "Plumbus": 8,
+      "Gromflomite Meat": 33,
+      "Glapflap Wine": 44,
+      "Zigerion Fish": 57,
+      "Quantum Silk": 70,
+      "Schmeckles Furniture": 85
     },
     "Odense": {
-      "Hvede": 17,
-      "Mj\u00f8d": 20,
-      "Tekstiler": 23,
-      "Vin": 38,
-      "Fisk": 52,
-      "Silke": 65
+      "Mega Seeds": 17,
+      "Fleeb Juice": 20,
+      "Galactic Textiles": 23,
+      "Glapflap Wine": 38,
+      "Zigerion Fish": 52,
+      "Quantum Silk": 65
     },
     "Viborg": {
-      "K\u00f8d": 36,
-      "Vin": 47,
-      "Fisk": 61,
-      "M\u00f8bler": 90,
-      "Relikvier": 110,
-      "Rustninger": 150
+      "Gromflomite Meat": 36,
+      "Glapflap Wine": 47,
+      "Zigerion Fish": 61,
+      "Schmeckles Furniture": 90,
+      "Portal Relics": 110,
+      "Federation Armor": 150
     },
     "Svendborg": {
-      "M\u00e6lk": 10,
-      "Hvede": 15,
-      "Mj\u00f8d": 22,
-      "Tekstiler": 25,
-      "K\u00f8d": 31,
-      "Vin": 41,
-      "Relikvier": 93
+      "Plumbus": 10,
+      "Mega Seeds": 15,
+      "Fleeb Juice": 22,
+      "Galactic Textiles": 25,
+      "Gromflomite Meat": 31,
+      "Glapflap Wine": 41,
+      "Portal Relics": 93
     },
-    "Vogn Manden": {}
+    "Galactic Truckstop": {}
   },
   "breaking_news": "",
   "closed_cities": [],
   "vogn_settings": {
-    "start_cost": 300,
-    "upgrade_step": 400
+    "start_cost": 50,
+    "upgrade_step": 75
   }
 }

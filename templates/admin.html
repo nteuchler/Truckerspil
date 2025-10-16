@@ -138,6 +138,105 @@
   <canvas id="moneyChart" style="width:100%;height:320px;"></canvas>
 </div>
 <p id="moneyChartMsg" style="font-size:.9rem;color:#666;margin-top:.3rem;"></p>
+<h2>Item Popularity (recent)</h2>
+<div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+  <label>Window:
+    <select id="popHours">
+      <option value="0.1667">10m</option>
+      <option value="0.3333">20m</option>
+      <option value="0.5" selected>30m</option>
+    </select>
+  </label>
+  <label>City:
+    <select id="popCity">
+      <option value="__all__" selected>All</option>
+      {% for city in cities %}
+        {% if city != 'Galactic Truckstop' %}<option value="{{ city }}">{{ city }}</option>{% endif %}
+      {% endfor %}
+    </select>
+  </label>
+</div>
+
+
+<div style="max-width:100%;min-height:260px;position:relative;margin-top:.5rem;">
+  <canvas id="popChart"></canvas>
+</div>
+<p id="popMsg" style="font-size:.9rem;color:#666;margin:.3rem 0 0;"></p>
+
+<div id="cityTops" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-top:.75rem;"></div>
+
+<script>
+(function(){
+  const hoursSel = document.getElementById('popHours');
+  const citySel  = document.getElementById('popCity');
+  const msg      = document.getElementById('popMsg');
+  const topsWrap = document.getElementById('cityTops');
+  const ctx      = document.getElementById('popChart').getContext('2d');
+  let chart = null;
+
+  function hsl(i){ return `hsl(${(i*67)%360} 70% 45%)`; }
+
+  async function load() {
+    msg.textContent = '';
+    const hours = parseInt(hoursSel.value || '6', 10);
+    const res = await fetch(`/popularity?hours=${hours}`, {cache:'no-store'});
+    if (!res.ok) { msg.textContent = `HTTP ${res.status}`; return; }
+    const data = await res.json();
+    const counts = data.per_city || {};
+    const allItems = new Set();
+    Object.values(counts).forEach(obj => Object.keys(obj||{}).forEach(it => allItems.add(it)));
+    const items = Array.from(allItems).sort();
+
+    const city = citySel.value;
+    const series = {};
+    if (city === '__all__') {
+      items.forEach(it => {
+        series[it] = 0;
+        Object.values(counts).forEach(c => { series[it] += (c[it]||0); });
+      });
+    } else {
+      Object.assign(series, counts[city] || {});
+      items.forEach(it => { series[it] = series[it] || 0; });
+    }
+
+    const top = Object.entries(series).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const labels = top.map(x=>x[0]);
+    const values = top.map(x=>x[1]);
+
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Items sold', data: values, backgroundColor: labels.map((_,i)=>hsl(i)) }] },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, title:{display:true, text: (city==='__all__'?'Top items (all cities)':'Top items — '+city)}},
+        scales:{ y:{ beginAtZero:true, grace:1 } },
+        animation:false
+      }
+    });
+
+    const tops = data.top_per_city || {};
+    const cityNames = Object.keys(tops).sort();
+    topsWrap.innerHTML = '';
+    cityNames.forEach(cn => {
+      const div = document.createElement('div');
+      div.style.cssText = 'border:1px solid #ddd;border-radius:8px;padding:.5rem;';
+      const ol = document.createElement('ol');
+      (tops[cn]||[]).forEach(([item,c]) => {
+        const li = document.createElement('li'); li.textContent = `${item} — ${c}`; ol.appendChild(li);
+      });
+      div.innerHTML = `<strong>${cn} — top 3</strong>`;
+      div.appendChild(ol);
+      topsWrap.appendChild(div);
+    });
+
+    msg.textContent = `Window: last ${data.window_hours}h. Data from existing sell logs.`;
+  }
+
+  const boot = () => { load(); hoursSel.onchange = load; citySel.onchange = load; setInterval(load, 60000); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 <script>

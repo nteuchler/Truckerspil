@@ -22,8 +22,9 @@
 <body>
 
 <header>
-  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia.snl.no%2Fmedia%2F43340%2Fstandard_handel2.jpg&f=1&nofb=1&ipt=7f18055a1f9767483362d2751dd0d6acf1493c64eab4e44d123b5e6687fd138a"
-       alt="Long-haul truck driving at dusk">
+  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic0.gamerantimages.com%2Fwordpress%2Fwp-content%2Fuploads%2F2022%2F10%2FThe-poster-for-Rick-and-Morty-season-6.jpg&f=1&nofb=1&ipt=508b4c9151442bb0d7ecc01922e469faf86c015880e54892a751c4ef14da2729"
+       alt="Long-haul truck driving at dusk"
+       style="max-width:100%;height:auto;display:block;margin:0 auto;">
   <h1>Handels spillet</h1>
 </header>
 
@@ -48,7 +49,7 @@
   <!-- Rig info -->
   <section class="card">
     <h2>Din vogn</h2>
-    <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} Sølv</p>
+    <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} Schmeckels</p>
   </section>
 
   <!-- City navigation -->
@@ -70,14 +71,15 @@
   </section>
 
   <!-- Marketplace or Truck-store -->
-  {% if selected_city == 'Vogn Manden' %}
+  {% if selected_city == "Galactic Truckstop" %}
   <section class="card">
     <h2>Vogn Manden</h2>
     <p>Din vogn kan på bære {{ capacity }} sække varer.</p>
     <p>opgrader til {{ capacity + 1 }} antal vare for {{ upgrade_cost }} Søv?</p>
-    <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
-        <button type="submit">Køb opgradering</button>
-    </form>
+  <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
+    <input type="hidden" name="player" value="{{ selected_player }}">
+    <button type="submit">Køb opgradering</button>
+  </form>
   </section>
   {% else %}
   <section class="card">
@@ -85,11 +87,12 @@
     <ul>
       {% for item, price in items.items() %}
         <li style="margin:.2rem 0">
-          {{ item }} – {{ price }} Sølv
-          <form action="/buy" method="POST" style="display:inline" onsubmit="return buyItem(this);">
-              <input type="hidden" name="item" value="{{ item }}">
-              <button type="submit">Køb</button>
-          </form>
+          {{ item }} – {{ price }} Schmeckels
+      <form action="/buy" method="POST" style="display:inline" onsubmit="return buyItem(this);">
+        <input type="hidden" name="player" value="{{ selected_player }}">
+        <input type="hidden" name="item" value="{{ item }}">
+        <button type="submit">Køb</button>
+      </form>
         </li>
       {% endfor %}
     </ul>
@@ -106,14 +109,16 @@
           {{ space if space else 'Empty' }}
 
           {% if space %}
-            <form action="/sell" method="POST" style="display:inline" onsubmit="return sellItem(this);">
-                <input type="hidden" name="space" value="{{ loop.index }}">
-                <button type="submit">Sælg</button>
-            </form>
-            <form action="/clear" method="POST" style="display:inline" onsubmit="return clearItem(this);">
-                <input type="hidden" name="space" value="{{ loop.index }}">
-                <button type="submit">Destruer</button>
-            </form>
+      <form action="/sell" method="POST" style="display:inline" onsubmit="return sellItem(this);">
+        <input type="hidden" name="player" value="{{ selected_player }}">
+        <input type="hidden" name="space" value="{{ loop.index }}">
+        <button type="submit">Sælg</button>
+      </form>
+      <form action="/clear" method="POST" style="display:inline" onsubmit="return clearItem(this);">
+        <input type="hidden" name="player" value="{{ selected_player }}">
+        <input type="hidden" name="space" value="{{ loop.index }}">
+        <button type="submit">Destruer</button>
+      </form>
           {% endif %}
         </li>
       {% endfor %}
@@ -124,7 +129,7 @@
   <section class="card">
     <h2>Trip Log</h2>
     <ul>
-      {% for entry in log %}
+      {% for entry in log|reverse %}
         <li style="margin:.15rem 0">{{ entry }}</li>
       {% endfor %}
     </ul>

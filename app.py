@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 import copy
 from datetime import datetime, timezone, timedelta
 import os
-
+import re
 
 app = Flask(__name__)
 
@@ -14,68 +14,70 @@ app = Flask(__name__)
 BACKUP_FILE = Path("game_state.json")
 DEFAULT_CITY_PRICES_EU = {
     "Ribe": {
-        "Mælk": 9,
-        "Hvede": 14,
-        "Mjød": 21,
-        "Tekstiler": 24,
-        "Kød": 30,
-        "Vin": 40,
+        "Plumbus": 9,
+        "Mega Seeds": 14,
+        "Fleeb Juice": 21,
+        "Galactic Textiles": 24,
+        "Gromflomite Meat": 30,
+        "Glapflap Wine": 40,
     },
     "Aarhus": {
-        "Mælk": 11,
-        "Hvede": 16,
-        "Mjød": 23,
-        "Tekstiler": 27,
-        "Kød": 34,
-        "Vin": 46,
-        "Fisk": 59,
+        "Plumbus": 11,
+        "Mega Seeds": 16,
+        "Fleeb Juice": 23,
+        "Galactic Textiles": 27,
+        "Gromflomite Meat": 34,
+        "Glapflap Wine": 46,
+        "Zigerion Fish": 59,
     },
     "Roskilde": {
-        "Mjød": 24,
-        "Tekstiler": 26,
-        "Silke": 74,
-        "Møbler": 88,
-        "Relikvier": 108,
-        "Rustninger": 147,
+        "Fleeb Juice": 24,
+        "Galactic Textiles": 26,
+        "Quantum Silk": 74,
+        "Schmeckles Furniture": 88,
+        "Portal Relics": 108,
+        "Federation Armor": 147,
     },
     "Helsingør": {
-        "Mælk": 8,
-        "Kød": 33,
-        "Vin": 44,
-        "Fisk": 57,
-        "Silke": 70,
-        "Møbler": 85,
+        "Plumbus": 8,
+        "Gromflomite Meat": 33,
+        "Glapflap Wine": 44,
+        "Zigerion Fish": 57,
+        "Quantum Silk": 70,
+        "Schmeckles Furniture": 85,
     },
     "Odense": {
-        "Hvede": 17,
-        "Mjød": 20,
-        "Tekstiler": 23,
-        "Vin": 38,
-        "Fisk": 52,
-        "Silke": 65,
+        "Mega Seeds": 17,
+        "Fleeb Juice": 20,
+        "Galactic Textiles": 23,
+        "Glapflap Wine": 38,
+        "Zigerion Fish": 52,
+        "Quantum Silk": 65,
     },
     "Viborg": {
-        "Kød": 36,
-        "Vin": 47,
-        "Fisk": 61,
-        "Møbler": 90,
-        "Relikvier": 110,
-        "Rustninger": 150,
+        "Gromflomite Meat": 36,
+        "Glapflap Wine": 47,
+        "Zigerion Fish": 61,
+        "Schmeckles Furniture": 90,
+        "Portal Relics": 110,
+        "Federation Armor": 150,
     },
     "Svendborg": {
-        "Mælk": 10,
-        "Hvede": 15,
-        "Mjød": 22,
-        "Tekstiler": 25,
-        "Kød": 31,
-        "Vin": 41,
-        "Relikvier": 93,
+        "Plumbus": 10,
+        "Mega Seeds": 15,
+        "Fleeb Juice": 22,
+        "Galactic Textiles": 25,
+        "Gromflomite Meat": 31,
+        "Glapflap Wine": 41,
+        "Portal Relics": 93,
     },
-    "Vogn Manden": {
+    "Galactic Truckstop": {
 
     }
 }
-
+# --- add near other defaults ---
+def parse_iso(ts: str) -> datetime:
+    return datetime.fromisoformat(ts.replace("Z", "+00:00"))
 
 DEFAULT_PLAYERS = {
     f"Player {i}": {
@@ -88,19 +90,18 @@ DEFAULT_PLAYERS = {
 }
 
 DEFAULT_VOGN_SETTINGS = {
-    "start_cost": 300,
-    "upgrade_step": 200,
-}
+    "start_cost": 50,
+    "upgrade_step": 75}
 
 # ---------------------------------------------------------------------
 #  Helper functions for persistence
 # ---------------------------------------------------------------------
 def next_upgrade_cost(capacity: int) -> int:
-    """Return cost for upgrading capacity by one slot."""
+    """Return cost for upgrading capacity by one slot (not cumulative)."""
     settings = globals().get("vogn_settings", DEFAULT_VOGN_SETTINGS)
     start_cost = int(settings.get("start_cost", DEFAULT_VOGN_SETTINGS["start_cost"]))
     upgrade_step = int(settings.get("upgrade_step", DEFAULT_VOGN_SETTINGS["upgrade_step"]))
-    if capacity <= 2:
+    if capacity < 2:
         return start_cost
     return start_cost + upgrade_step * (capacity - 2)
 
@@ -111,6 +112,7 @@ def iso_now():
 
 def load_game_state():
     """Load state from disk or create a brand-new one."""
+    
     if BACKUP_FILE.exists():
         with BACKUP_FILE.open("r") as f:
             data = json.load(f)
@@ -125,10 +127,7 @@ def load_game_state():
     data.setdefault("breaking_news", "")
     data.setdefault("closed_cities", [])
     data.setdefault("vogn_settings", copy.deepcopy(DEFAULT_VOGN_SETTINGS))
-    # ---------- NEW: ensure Vogn Manden exists even in older saves ----------
-    if "Vogn Manden" not in data["city_prices"]:
-        data["city_prices"]["Vogn Manden"] = {}
-    # -----------------------------------------------------------------------
+
 
     for p in data["players"].values():
         p.setdefault("capacity", 2)
@@ -209,6 +208,10 @@ def price_overview():
 
 def buy():
     global selected_player
+    # Allow client to explicitly state which player is performing the buy
+    player_name = request.form.get('player')
+    if player_name and player_name in players:
+        selected_player = player_name
     player_data = players[selected_player]
     if selected_city in closed_cities:
         return jsonify(success=False, message=f"{selected_city} is currently closed.")
@@ -236,11 +239,11 @@ def buy():
                     )
 
                     save_game_state()  # Save game state after the buy action
-                    return jsonify(success=True)  # Return a success response
+                    return jsonify(success=True, selected_player=selected_player)  # Return a success response
                 else:
                     return jsonify(success=False, message="Insufficient funds.")
         else:
-            return jsonify(success=False, message="No empty cargo space available.")
+                    return jsonify(success=False, message="No empty cargo space available.")
 
     return jsonify(success=False, message="Item not found.")
 
@@ -248,10 +251,13 @@ def buy():
 
 def sell():
     global selected_player
+    # Allow client to explicitly state which player is performing the sell
+    player_name = request.form.get('player')
+    if player_name and player_name in players:
+        selected_player = player_name
     player_data = players[selected_player]
     if selected_city in closed_cities:
         return jsonify(success=False, message=f"{selected_city} is currently closed.")
-
     space = request.form.get('space')
     items = city_prices[selected_city]
 
@@ -272,7 +278,7 @@ def sell():
                     )
 
                     save_game_state()  # Save game state after the sell action
-                    return jsonify(success=True)  # Return success response after selling
+                    return jsonify(success=True, selected_player=selected_player)  # Return success response after selling
                 else:
                     return jsonify(success=False, message=f"The city does not demand {item}.", status=400)
 
@@ -281,6 +287,11 @@ def sell():
 @app.route('/clear', methods=['POST'])
 def clear():
     global selected_player
+    # Allow client to explicitly state which player is performing the clear
+    player_name = request.form.get('player') or selected_player
+    if player_name not in players:
+        player_name = selected_player
+    selected_player = player_name
     player_data = players[selected_player]
 
     space = request.form.get('space')
@@ -291,7 +302,7 @@ def clear():
             player_data['cargo'][space_index] = ''  # Clear the cargo space
             save_game_state()  # Save game state after clearing
 
-    return jsonify(success=True)  # Return success response after clearing
+    return jsonify(success=True, selected_player=selected_player)  # Return success response after clearing
 
 @app.route('/set_city', methods=['POST'])
 def set_city():
@@ -386,11 +397,16 @@ def push_news():
 # ------------------------------------------------------------------
 #  Toggle city open / closed from the admin panel
 # ------------------------------------------------------------------
+
+
 @app.route('/update_city_status', methods=['POST'])
 def update_city_status():
     global closed_cities
     # Flask builds a list containing the value for every checked box
-    closed_cities = request.form.getlist('closed_cities')
+    closed_cities = [
+        city for city in request.form.getlist('closed_cities')
+        if city != list(DEFAULT_CITY_PRICES_EU)[-1]
+    ]
     save_game_state()
     return redirect(url_for('admin'))
 
@@ -419,8 +435,15 @@ def adjust_money():
 
 @app.route('/upgrade_truck', methods=['POST'])
 def upgrade_truck():
-    if selected_city != "Vogn Manden":
-        return jsonify(success=False, message="Upgrades only available in the Vogn Manden.")
+    # Ensure the performing player is respected
+    global selected_player
+    player_name = request.form.get('player') or selected_player
+    if player_name not in players:
+        player_name = selected_player
+    selected_player = player_name
+
+    if selected_city != "Galactic Truckstop":
+        return jsonify(success=False, message="Upgrades only available in the Galactic Truckstop.")
     player = players[selected_player]
     cost = next_upgrade_cost(player["capacity"])
     if player["money"] < cost:
@@ -437,7 +460,14 @@ def upgrade_truck():
     )
     save_game_state()
     return jsonify(success=True)
-
+    # ------------------------------------------------------------------
+    #  Ensure selected_player persists after buy/sell/clear/upgrade
+    # ------------------------------------------------------------------
+    @app.after_request
+    def persist_selected_player(response):
+        # Always save the current selected_player after each request
+        save_game_state()
+        return response
 # ------------------------------------------------------------------
 #  Hard reset – starts a brand-new game with default data
 # ------------------------------------------------------------------
@@ -580,6 +610,74 @@ def delete_player():
             selected_player = next(iter(players), '')
         save_game_state()
     return redirect(url_for('admin'))
+
+SELL_RE = re.compile(r"^Sold\s+(?P<item>.+?)\s+for\s+€\d+\s+in\s+(?P<city>.+?)\.$")
+
+def parse_iso(ts: str) -> datetime:
+    return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+
+@app.route('/popularity')
+def popularity():
+    """
+    Compute recent popularity from existing transaction_log.
+    Looks for 'Sold … in CITY.' entries and uses the following timestamp record.
+    Query parameter: ?hours=6  (default 6, allowed 1–168)
+    """
+    try:
+        hours = int(request.args.get("hours", 6))
+    except Exception:
+        hours = 6
+    hours = max(1, min(hours, 168))
+
+    now = datetime.now(timezone.utc)
+    start = now - timedelta(hours=hours)
+
+    per_city = {}   # {city: {item: count}}
+    total    = {}   # {item: count}
+
+    for pdata in players.values():
+        log = pdata.get("transaction_log", [])
+        i = 0
+        while i < len(log):
+            entry = log[i]
+            if isinstance(entry, str):
+                m = SELL_RE.match(entry.strip())
+                if m:
+                    ts = None
+                    if i + 1 < len(log) and isinstance(log[i+1], dict):
+                        ts_raw = log[i+1].get("ts")
+                        if ts_raw:
+                            try:
+                                ts = parse_iso(ts_raw)
+                            except Exception:
+                                ts = None
+                    if ts and ts >= start:
+                        city = m.group("city") or "Unknown"
+                        item = m.group("item") or "Unknown"
+                        per_city.setdefault(city, {}).setdefault(item, 0)
+                        per_city[city][item] += 1
+                        total.setdefault(item, 0)
+                        total[item] += 1
+                    i += 2
+                    continue
+            i += 1
+
+    def top_list(d: dict, k: int):
+        return sorted(([k_, v] for k_, v in d.items()), key=lambda x: (-x[1], x[0]))[:k]
+
+    top_per_city = {c: top_list(items, 3) for c, items in per_city.items()}
+    top_global   = top_list(total, 10)
+
+    resp = jsonify({
+        "window_hours": hours,
+        "per_city": per_city,
+        "top_per_city": top_per_city,
+        "top_global": top_global,
+        "cities": list(per_city.keys()),
+    })
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 
 if __name__ == '__main__':
