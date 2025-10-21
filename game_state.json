@@ -56,26 +56,38 @@
       ]
     },
     "Player 3": {
-      "money": 100,
+      "money": 64,
       "capacity": 2,
       "cargo": [
-        "",
+        "Gromflomite Meat",
         ""
       ],
-      "transaction_log": []
+      "transaction_log": [
+        "Bought Gromflomite Meat for \u20ac36 in Limbjergg\u00e5rd.",
+        {
+          "ts": "2025-10-21T15:34:23+00:00",
+          "money": 64
+        }
+      ]
     },
     "Player 4": {
-      "money": 100,
+      "money": 64,
       "capacity": 2,
       "cargo": [
-        "",
+        "Gromflomite Meat",
         ""
       ],
-      "transaction_log": []
+      "transaction_log": [
+        "Bought Gromflomite Meat for \u20ac36 in Limbjergg\u00e5rd.",
+        {
+          "ts": "2025-10-21T15:34:14+00:00",
+          "money": 64
+        }
+      ]
     }
   },
-  "selected_city": "Limbjergg\u00e5rd",
-  "selected_player": "Player 2",
+  "selected_city": "B\u00f8gebjerg",
+  "selected_player": "Player 4",
   "city_prices": {
     "Laden": {
       "Plumbus": 9,
