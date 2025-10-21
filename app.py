@@ -13,7 +13,7 @@ app = Flask(__name__)
 # ---------------------------------------------------------------------
 BACKUP_FILE = Path("game_state.json")
 DEFAULT_CITY_PRICES_EU = {
-    "Ribe": {
+    "Laden": {
         "Plumbus": 9,
         "Mega Seeds": 14,
         "Fleeb Juice": 21,
@@ -21,7 +21,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Gromflomite Meat": 30,
         "Glapflap Wine": 40,
     },
-    "Aarhus": {
+    "DNS": {
         "Plumbus": 11,
         "Mega Seeds": 16,
         "Fleeb Juice": 23,
@@ -30,7 +30,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Glapflap Wine": 46,
         "Zigerion Fish": 59,
     },
-    "Roskilde": {
+    "Vikingestykket": {
         "Fleeb Juice": 24,
         "Galactic Textiles": 26,
         "Quantum Silk": 74,
@@ -38,7 +38,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Portal Relics": 108,
         "Federation Armor": 147,
     },
-    "Helsingør": {
+    "Det lille hus på prærien": {
         "Plumbus": 8,
         "Gromflomite Meat": 33,
         "Glapflap Wine": 44,
@@ -46,7 +46,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Quantum Silk": 70,
         "Schmeckles Furniture": 85,
     },
-    "Odense": {
+    "Bøgebjerg": {
         "Mega Seeds": 17,
         "Fleeb Juice": 20,
         "Galactic Textiles": 23,
@@ -54,7 +54,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Zigerion Fish": 52,
         "Quantum Silk": 65,
     },
-    "Viborg": {
+    "Limbjerggård": {
         "Gromflomite Meat": 36,
         "Glapflap Wine": 47,
         "Zigerion Fish": 61,
@@ -62,7 +62,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Portal Relics": 110,
         "Federation Armor": 150,
     },
-    "Svendborg": {
+    "Landslejr stenene": {
         "Plumbus": 10,
         "Mega Seeds": 15,
         "Fleeb Juice": 22,
@@ -71,7 +71,7 @@ DEFAULT_CITY_PRICES_EU = {
         "Glapflap Wine": 41,
         "Portal Relics": 93,
     },
-    "Galactic Truckstop": {
+    "Opgrader last": {
 
     }
 }
@@ -121,7 +121,7 @@ def load_game_state():
 
     # Fill in any missing keys so old save files still work
     data.setdefault("players", DEFAULT_PLAYERS.copy())
-    data.setdefault("selected_city", "Odense")
+    data.setdefault("selected_city", next(iter(DEFAULT_CITY_PRICES_EU)))
     data.setdefault("selected_player", "Player 1")
     data.setdefault("city_prices", DEFAULT_CITY_PRICES_EU.copy())
     data.setdefault("breaking_news", "")
@@ -308,8 +308,9 @@ def clear():
 def set_city():
     global selected_city
     selected_city = request.form.get('city')  # Update the selected city
+    player = request.form.get('player') or selected_player
     save_game_state()  # Save the city selection
-    return redirect(url_for('index'))
+    return redirect(url_for('player_page', player_name=player))
 
 @app.route('/set_player', methods=['POST'])
 def set_player():
@@ -442,8 +443,8 @@ def upgrade_truck():
         player_name = selected_player
     selected_player = player_name
 
-    if selected_city != "Galactic Truckstop":
-        return jsonify(success=False, message="Upgrades only available in the Galactic Truckstop.")
+    if selected_city != "Opgrader last":
+        return jsonify(success=False, message="Upgrades only available in the Opgrader last.")
     player = players[selected_player]
     cost = next_upgrade_cost(player["capacity"])
     if player["money"] < cost:
@@ -615,6 +616,35 @@ SELL_RE = re.compile(r"^Sold\s+(?P<item>.+?)\s+for\s+€\d+\s+in\s+(?P<city>.+?)
 
 def parse_iso(ts: str) -> datetime:
     return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+
+
+@app.route('/p/<player_name>')
+def player_page(player_name):
+    if player_name not in players:
+        return f"Unknown player: {player_name}", 404
+
+    global selected_player
+    selected_player = player_name
+    player_data = players[player_name]
+    items = city_prices[selected_city]
+
+    return render_template(
+        'index.html',
+        items=items,
+        cargo=player_data['cargo'],
+        money=player_data['money'],
+        cities=cities,
+        selected_city=selected_city,
+        log=player_data['transaction_log'],
+        players=players.keys(),
+        selected_player=player_name,
+        breaking_news=breaking_news,
+        closed_cities=closed_cities,
+        capacity=player_data['capacity'],
+        upgrade_cost=next_upgrade_cost(player_data['capacity'])
+    )
+
+
 
 @app.route('/popularity')
 def popularity():
