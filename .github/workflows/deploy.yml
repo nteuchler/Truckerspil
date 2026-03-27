@@ -1,0 +1,23 @@
+name: Deploy to home server
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-home
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose down
+          docker compose up -d --build
