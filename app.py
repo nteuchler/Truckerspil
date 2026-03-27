@@ -8,80 +8,160 @@ import re
 
 app = Flask(__name__)
 
+CURRENCY_SYMBOL = "¥"
+UPGRADE_CITY = "Yamato værksted"
+
+CITY_NAME_MAP = {
+    "Laden": "Tokyo",
+    "DNS": "Osaka",
+    "Vikingestykket": "Kyoto",
+    "Det lille hus på prærien": "Yokohama",
+    "Bøgebjerg": "Sapporo",
+    "Limbjerggård": "Kobe",
+    "Landslejr stenene": "Nagasaki",
+    "Opgrader last": UPGRADE_CITY,
+}
+
+ITEM_NAME_MAP = {
+    "Plumbus": "Nudler",
+    "Mega Seeds": "Wasabi",
+    "Fleeb Juice": "Matcha",
+    "Galactic Textiles": "Kimonoer",
+    "Gromflomite Meat": "Ramenkits",
+    "Glapflap Wine": "Sake",
+    "Zigerion Fish": "Tun",
+    "Quantum Silk": "Katanasværd",
+    "Schmeckles Furniture": "Bonsaitræer",
+    "Portal Relics": "Shinto-amuletter",
+    "Federation Armor": "Samurai-rustninger",
+}
+
 # ---------------------------------------------------------------------
 #  Default data for a fresh game
 # ---------------------------------------------------------------------
 BACKUP_FILE = Path("game_state.json")
 DEFAULT_CITY_PRICES_EU = {
-    "Laden": {
-        "Plumbus": 9,
-        "Mega Seeds": 14,
-        "Fleeb Juice": 21,
-        "Galactic Textiles": 24,
-        "Gromflomite Meat": 30,
-        "Glapflap Wine": 40,
+    "Tokyo": {
+        "Nudler": 900,
+        "Wasabi": 1400,
+        "Matcha": 2100,
+        "Kimonoer": 2400,
+        "Ramenkits": 3000,
+        "Sake": 4000,
     },
-    "DNS": {
-        "Plumbus": 11,
-        "Mega Seeds": 16,
-        "Fleeb Juice": 23,
-        "Galactic Textiles": 27,
-        "Gromflomite Meat": 34,
-        "Glapflap Wine": 46,
-        "Zigerion Fish": 59,
+    "Osaka": {
+        "Nudler": 1100,
+        "Wasabi": 1600,
+        "Matcha": 2300,
+        "Kimonoer": 2700,
+        "Ramenkits": 3400,
+        "Sake": 4600,
+        "Tun": 5900,
     },
-    "Vikingestykket": {
-        "Fleeb Juice": 24,
-        "Galactic Textiles": 26,
-        "Quantum Silk": 74,
-        "Schmeckles Furniture": 88,
-        "Portal Relics": 108,
-        "Federation Armor": 147,
+    "Kyoto": {
+        "Matcha": 2400,
+        "Kimonoer": 2600,
+        "Katanasværd": 7400,
+        "Bonsaitræer": 8800,
+        "Shinto-amuletter": 10800,
+        "Samurai-rustninger": 14700,
     },
-    "Det lille hus på prærien": {
-        "Plumbus": 8,
-        "Gromflomite Meat": 33,
-        "Glapflap Wine": 44,
-        "Zigerion Fish": 57,
-        "Quantum Silk": 70,
-        "Schmeckles Furniture": 85,
+    "Yokohama": {
+        "Nudler": 800,
+        "Ramenkits": 3300,
+        "Sake": 4400,
+        "Tun": 5700,
+        "Katanasværd": 7000,
+        "Bonsaitræer": 8500,
     },
-    "Bøgebjerg": {
-        "Mega Seeds": 17,
-        "Fleeb Juice": 20,
-        "Galactic Textiles": 23,
-        "Glapflap Wine": 38,
-        "Zigerion Fish": 52,
-        "Quantum Silk": 65,
+    "Sapporo": {
+        "Wasabi": 1700,
+        "Matcha": 2000,
+        "Kimonoer": 2300,
+        "Sake": 3800,
+        "Tun": 5200,
+        "Katanasværd": 6500,
     },
-    "Limbjerggård": {
-        "Gromflomite Meat": 36,
-        "Glapflap Wine": 47,
-        "Zigerion Fish": 61,
-        "Schmeckles Furniture": 90,
-        "Portal Relics": 110,
-        "Federation Armor": 150,
+    "Kobe": {
+        "Ramenkits": 3600,
+        "Sake": 4700,
+        "Tun": 6100,
+        "Bonsaitræer": 9000,
+        "Shinto-amuletter": 11000,
+        "Samurai-rustninger": 15000,
     },
-    "Landslejr stenene": {
-        "Plumbus": 10,
-        "Mega Seeds": 15,
-        "Fleeb Juice": 22,
-        "Galactic Textiles": 25,
-        "Gromflomite Meat": 31,
-        "Glapflap Wine": 41,
-        "Portal Relics": 93,
+    "Nagasaki": {
+        "Nudler": 1000,
+        "Wasabi": 1500,
+        "Matcha": 2200,
+        "Kimonoer": 2500,
+        "Ramenkits": 3100,
+        "Sake": 4100,
+        "Shinto-amuletter": 9300,
     },
-    "Opgrader last": {
-
-    }
+    UPGRADE_CITY: {},
 }
 # --- add near other defaults ---
 def parse_iso(ts: str) -> datetime:
     return datetime.fromisoformat(ts.replace("Z", "+00:00"))
 
+
+def remap_name(value: str, mapping: dict[str, str]) -> str:
+    return mapping.get(value, value)
+
+
+def remap_log_entry(entry):
+    if not isinstance(entry, str):
+        return entry
+    for old, new in CITY_NAME_MAP.items():
+        entry = entry.replace(old, new)
+    for old, new in ITEM_NAME_MAP.items():
+        entry = entry.replace(old, new)
+    entry = entry.replace("Bought", "Købte")
+    entry = entry.replace("Sold", "Solgte")
+    entry = entry.replace("Upgraded truck to", "Opgraderede lastvognen til")
+    entry = entry.replace("pallets", "pladser")
+    entry = entry.replace("Admin adjustment:", "Adminjustering:")
+    entry = entry.replace("Schmeckels", "yen")
+    entry = entry.replace("€", CURRENCY_SYMBOL)
+    return entry
+
+
+def migrate_theme_data(data: dict) -> dict:
+    players_data = data.get("players", {})
+    for pdata in players_data.values():
+        if pdata.get("money", 0) < 1000:
+            pdata["money"] *= 100
+        pdata["cargo"] = [remap_name(item, ITEM_NAME_MAP) if item else "" for item in pdata.get("cargo", [])]
+        migrated_log = []
+        for entry in pdata.get("transaction_log", []):
+            if isinstance(entry, dict) and entry.get("money", 0) < 1000:
+                entry = {**entry, "money": entry["money"] * 100}
+            migrated_log.append(remap_log_entry(entry))
+        pdata["transaction_log"] = migrated_log
+
+    migrated_prices = {}
+    for city, goods in data.get("city_prices", {}).items():
+        new_city = remap_name(city, CITY_NAME_MAP)
+        migrated_prices[new_city] = {
+            remap_name(item, ITEM_NAME_MAP): price
+            for item, price in goods.items()
+        }
+    if migrated_prices:
+        data["city_prices"] = migrated_prices
+
+    data["selected_city"] = remap_name(data.get("selected_city", next(iter(DEFAULT_CITY_PRICES_EU))), CITY_NAME_MAP)
+    data["closed_cities"] = [remap_name(city, CITY_NAME_MAP) for city in data.get("closed_cities", [])]
+    data["breaking_news"] = remap_log_entry(data.get("breaking_news", ""))
+    if data.get("vogn_settings", {}).get("start_cost", 0) < 1000:
+        data.setdefault("vogn_settings", {})
+        data["vogn_settings"]["start_cost"] = data["vogn_settings"].get("start_cost", 50) * 100
+        data["vogn_settings"]["upgrade_step"] = data["vogn_settings"].get("upgrade_step", 75) * 100
+    return data
+
 DEFAULT_PLAYERS = {
     f"Player {i}": {
-        "money": 100,
+        "money": 10000,
         "capacity": 2,          # ← NEW
         "cargo": ["", ""],      # two slots to match capacity
         "transaction_log": []
@@ -90,8 +170,8 @@ DEFAULT_PLAYERS = {
 }
 
 DEFAULT_VOGN_SETTINGS = {
-    "start_cost": 50,
-    "upgrade_step": 75}
+    "start_cost": 5000,
+    "upgrade_step": 7500}
 
 # ---------------------------------------------------------------------
 #  Helper functions for persistence
@@ -118,6 +198,8 @@ def load_game_state():
             data = json.load(f)
     else:
         data = {}
+
+    data = migrate_theme_data(data)
 
     # Fill in any missing keys so old save files still work
     data.setdefault("players", DEFAULT_PLAYERS.copy())
@@ -214,9 +296,9 @@ def buy():
         selected_player = player_name
     player_data = players[selected_player]
     if selected_city in closed_cities:
-        return jsonify(success=False, message=f"{selected_city} is currently closed.")
+        return jsonify(success=False, message=f"{selected_city} er lukket lige nu.")
     if player_data["cargo"].count("") == 0:
-        return jsonify(success=False, message="All cargo spaces full. Consider a truck upgrade.")
+        return jsonify(success=False, message="Alle lastrum er fyldt. Overvej en opgradering.")
 
     item = request.form.get('item')
     items = city_prices[selected_city]
@@ -232,7 +314,7 @@ def buy():
                     player_data['money'] -= item_price
                     # after you charge the player’s money …
                     player_data['transaction_log'].append(
-                        f"Bought {item} for €{item_price} in {selected_city}."
+                        f"Købte {item} for {CURRENCY_SYMBOL}{item_price} i {selected_city}."
                     )
                     player_data['transaction_log'].append(
                         {"ts": iso_now(), "money": player_data["money"]}
@@ -241,11 +323,11 @@ def buy():
                     save_game_state()  # Save game state after the buy action
                     return jsonify(success=True, selected_player=selected_player)  # Return a success response
                 else:
-                    return jsonify(success=False, message="Insufficient funds.")
+                    return jsonify(success=False, message="Du har ikke yen nok.")
         else:
-                    return jsonify(success=False, message="No empty cargo space available.")
+                    return jsonify(success=False, message="Der er ingen tomme lastrum.")
 
-    return jsonify(success=False, message="Item not found.")
+    return jsonify(success=False, message="Varen blev ikke fundet.")
 
 @app.route('/sell', methods=['POST'])
 
@@ -257,7 +339,7 @@ def sell():
         selected_player = player_name
     player_data = players[selected_player]
     if selected_city in closed_cities:
-        return jsonify(success=False, message=f"{selected_city} is currently closed.")
+        return jsonify(success=False, message=f"{selected_city} er lukket lige nu.")
     space = request.form.get('space')
     items = city_prices[selected_city]
 
@@ -271,7 +353,7 @@ def sell():
                     player_data['cargo'][space_index] = ''
                     player_data['money'] += item_price
                     player_data['transaction_log'].append(
-                        f"Sold {item} for €{item_price} in {selected_city}."
+                        f"Solgte {item} for {CURRENCY_SYMBOL}{item_price} i {selected_city}."
                     )
                     player_data['transaction_log'].append(
                         {"ts": iso_now(), "money": player_data["money"]}
@@ -280,9 +362,9 @@ def sell():
                     save_game_state()  # Save game state after the sell action
                     return jsonify(success=True, selected_player=selected_player)  # Return success response after selling
                 else:
-                    return jsonify(success=False, message=f"The city does not demand {item}.", status=400)
+                    return jsonify(success=False, message=f"{selected_city} efterspørger ikke {item}.", status=400)
 
-    return jsonify(success=False, message="Invalid cargo space.")
+    return jsonify(success=False, message="Ugyldig lasteplads.")
 
 @app.route('/clear', methods=['POST'])
 def clear():
@@ -426,7 +508,7 @@ def adjust_money():
         players[player_name]['money'] += delta
         # optional audit log:
         players[player_name]['transaction_log'].append(
-            f"Admin adjustment: €{delta:+d}"
+            f"Adminjustering: {CURRENCY_SYMBOL}{delta:+d}"
         )
         players[player_name]['transaction_log'].append(
             {"ts": iso_now(), "money": players[player_name]['money']}
@@ -443,18 +525,18 @@ def upgrade_truck():
         player_name = selected_player
     selected_player = player_name
 
-    if selected_city != "Opgrader last":
-        return jsonify(success=False, message="Upgrades only available in the Opgrader last.")
+    if selected_city != UPGRADE_CITY:
+        return jsonify(success=False, message=f"Opgraderinger kan kun købes i {UPGRADE_CITY}.")
     player = players[selected_player]
     cost = next_upgrade_cost(player["capacity"])
     if player["money"] < cost:
-        return jsonify(success=False, message="Not enough cash for that upgrade.")
+        return jsonify(success=False, message="Du har ikke yen nok til opgraderingen.")
     # Perform upgrade
     player["money"]   -= cost
     player["capacity"] += 1
     player["cargo"].append("")            # new empty slot
     player["transaction_log"].append(
-        f"Upgraded truck to {player['capacity']} pallets for €{cost}."
+        f"Opgraderede lastvognen til {player['capacity']} pladser for {CURRENCY_SYMBOL}{cost}."
     )
     player["transaction_log"].append(
         {"ts": iso_now(), "money": player["money"]}
@@ -566,7 +648,7 @@ def add_player():
     if not name or name in players:
         return redirect(url_for('admin'))
     players[name] = {
-        "money": 100,
+        "money": 10000,
         "capacity": 2,
         "cargo": ["", ""],
         "transaction_log": []
@@ -612,7 +694,7 @@ def delete_player():
         save_game_state()
     return redirect(url_for('admin'))
 
-SELL_RE = re.compile(r"^Sold\s+(?P<item>.+?)\s+for\s+€\d+\s+in\s+(?P<city>.+?)\.$")
+SELL_RE = re.compile(r"^Solgte\s+(?P<item>.+?)\s+for\s+¥\d+\s+i\s+(?P<city>.+?)\.$")
 
 def parse_iso(ts: str) -> datetime:
     return datetime.fromisoformat(ts.replace("Z", "+00:00"))
@@ -621,7 +703,7 @@ def parse_iso(ts: str) -> datetime:
 @app.route('/p/<player_name>')
 def player_page(player_name):
     if player_name not in players:
-        return f"Unknown player: {player_name}", 404
+        return f"Ukendt spiller: {player_name}", 404
 
     global selected_player
     selected_player = player_name

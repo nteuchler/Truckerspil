@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-
+    <title>Adminpanel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Admin Panel</h1>
+<main class="admin-shell">
+    <h1>Adminpanel</h1>
 
-    <h2>Update Prices</h2>
+    <h2>Opdater priser</h2>
     <form action="/admin" method="POST">
-    <label for="city">Select City:</label>
+    <label for="city">Vælg by:</label>
     <select name="city" id="city" onchange="this.form.submit()">
-        <option value="" disabled selected>Select a city</option>
+        <option value="" disabled selected>Vælg en by</option>
         {% for city in cities %}
             <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
         {% endfor %}
@@ -21,23 +22,23 @@
     </form>
 
     {% if selected_city %}
-        {% if selected_city == 'Vogn Manden' %}
+        {% if selected_city == 'Yamato værksted' %}
         <form action="/update_vogn_settings" method="POST">
-            <h3>Vognmanden Settings</h3>
+            <h3>Indstillinger for Yamato værksted</h3>
             <div>
-                <label for="start_cost">Start cost (first upgrade):</label>
+                <label for="start_cost">Startpris for første opgradering:</label>
                 <input type="number" id="start_cost" name="start_cost" value="{{ vogn_settings['start_cost'] }}" min="0" required>
             </div>
             <div>
-                <label for="upgrade_step">Upgrade step (per extra slot):</label>
+                <label for="upgrade_step">Pris pr. ekstra plads:</label>
                 <input type="number" id="upgrade_step" name="upgrade_step" value="{{ vogn_settings['upgrade_step'] }}" min="0" required>
             </div>
-            <button type="submit">Update Vognmanden</button>
+            <button type="submit">Opdater værksted</button>
         </form>
         {% else %}
         <form action="/update_prices" method="POST">
             <input type="hidden" name="city" value="{{ selected_city }}">
-            <h3>Prices in {{ selected_city }}</h3>
+            <h3>Priser i {{ selected_city }}</h3>
             <ul>
                 {% for item, price in city_prices[selected_city].items() %}
                     <li>
@@ -46,124 +47,115 @@
                     </li>
                 {% endfor %}
             </ul>
-            <button type="submit">Update Prices</button>
+            <button type="submit">Opdater priser</button>
         </form>
         {% endif %}
     {% else %}
-        <p>Please select a city to view and update prices.</p>
+        <p>Vælg en by for at se og opdatere priser.</p>
     {% endif %}
 
-    <h2>Send Breaking News</h2>
+    <h2>Send nyhedsflash</h2>
     <form action="/push_news" method="POST">
-        <label for="news_message">Breaking News:</label>
+        <label for="news_message">Nyhedsflash:</label>
         <textarea name="news_message" id="news_message" rows="4" cols="50"></textarea>
         <br>
-        <button type="submit">Push News</button>
+        <button type="submit">Send besked</button>
     </form>
 
+    <h2>Åbn / luk byer</h2>
+    <form action="/update_city_status" method="POST">
+        <ul>
+        {% for city in cities %}
+            <li>
+                <label>
+                    <input type="checkbox"
+                           name="closed_cities"
+                           value="{{ city }}"
+                           {% if city in closed_cities %}checked{% endif %}>
+                    {{ city }}
+                </label>
+            </li>
+        {% endfor %}
+        </ul>
+        <button type="submit">Gem status</button>
+    </form>
 
-    <h2>Open / Close Cities</h2>
-<form action="/update_city_status" method="POST">
-    <ul>
-    {% for city in cities %}
-        <li>
-            <label>
-                <input type="checkbox"
-                       name="closed_cities"
-                       value="{{ city }}"
-                       {% if city in closed_cities %}checked{% endif %}>
-                {{ city }}
-            </label>
-        </li>
-    {% endfor %}
-    </ul>
-    <button type="submit">Apply</button>
-</form>
-<h2>Manage Players</h2>
-<table>
-  <tr>
-    <th>Player</th>
-    <th>Current&nbsp;€</th>
-    <th>Give&nbsp;/&nbsp;Take (±)</th>
-    <th>Rename to…</th>
-    <th>Delete</th>
-  </tr>
+    <h2>Administrer spillere</h2>
+    <table>
+      <tr>
+        <th>Spiller</th>
+        <th>Nuværende&nbsp;yen</th>
+        <th>Giv&nbsp;/&nbsp;træk (±)</th>
+        <th>Omdøb til…</th>
+        <th>Slet</th>
+      </tr>
 
-  {% for name, pdata in players.items() %}
-  <tr>
-    <td>{{ name }}</td>
-    <td>{{ pdata.money }}</td>
-
-    <!-- Change money -->
-    <td>
-      <form action="/adjust_money" method="POST" style="display:inline;">
-        <input type="number" name="{{ name }}" value="0" style="width:6em;">
-        <button type="submit">Apply</button>
-      </form>
-    </td>
-
-    <!-- Rename -->
-    <td>
-      <form action="/rename_player" method="POST" style="display:inline;">
-        <input type="hidden" name="old_name" value="{{ name }}">
-        <input type="text"   name="new_name" placeholder="New name" style="width:8em;">
-        <button type="submit">Rename</button>
-      </form>
-    </td>
-
-    <!-- Delete -->
-    <td>
-      <form action="/delete_player" method="POST"
-            style="display:inline;"
-            onsubmit="return confirm('Delete {{ name }} permanently?');">
-        <input type="hidden" name="delete_player_name" value="{{ name }}">
-        <button type="submit">🗑️</button>
-      </form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-
-
-
-
-<h2>Add Player</h2>
-<form action="/add_player" method="POST">
-    <input type="text" name="new_player_name" placeholder="New player name" required>
-    <button type="submit">Add</button>
-</form>
-
-<h2>Players Money Over Time</h2>
-<div id="moneyChartWrap" style="max-width:100%;min-height:320px;position:relative;">
-  <canvas id="moneyChart" style="width:100%;height:320px;"></canvas>
-</div>
-<p id="moneyChartMsg" style="font-size:.9rem;color:#666;margin-top:.3rem;"></p>
-<h2>Item Popularity (recent)</h2>
-<div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
-  <label>Window:
-    <select id="popHours">
-      <option value="0.1667">10m</option>
-      <option value="0.3333">20m</option>
-      <option value="0.5" selected>30m</option>
-    </select>
-  </label>
-  <label>City:
-    <select id="popCity">
-      <option value="__all__" selected>All</option>
-      {% for city in cities %}
-        {% if city != 'Opgrader last' %}<option value="{{ city }}">{{ city }}</option>{% endif %}
+      {% for name, pdata in players.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td>{{ pdata.money }}</td>
+        <td>
+          <form action="/adjust_money" method="POST" style="display:inline;">
+            <input type="number" name="{{ name }}" value="0" style="width:6em;">
+            <button type="submit">Gem</button>
+          </form>
+        </td>
+        <td>
+          <form action="/rename_player" method="POST" style="display:inline;">
+            <input type="hidden" name="old_name" value="{{ name }}">
+            <input type="text" name="new_name" placeholder="Nyt navn" style="width:8em;">
+            <button type="submit">Omdøb</button>
+          </form>
+        </td>
+        <td>
+          <form action="/delete_player" method="POST"
+                style="display:inline;"
+                onsubmit="return confirm('Slet {{ name }} permanent?');">
+            <input type="hidden" name="delete_player_name" value="{{ name }}">
+            <button type="submit">🗑️</button>
+          </form>
+        </td>
+      </tr>
       {% endfor %}
-    </select>
-  </label>
-</div>
+    </table>
 
+    <h2>Tilføj spiller</h2>
+    <form action="/add_player" method="POST">
+        <input type="text" name="new_player_name" placeholder="Nyt spillernavn" required>
+        <button type="submit">Tilføj</button>
+    </form>
 
-<div style="max-width:100%;min-height:260px;position:relative;margin-top:.5rem;">
-  <canvas id="popChart"></canvas>
-</div>
-<p id="popMsg" style="font-size:.9rem;color:#666;margin:.3rem 0 0;"></p>
+    <h2>Spillernes yen over tid</h2>
+    <div id="moneyChartWrap" style="max-width:100%;min-height:320px;position:relative;">
+      <canvas id="moneyChart" style="width:100%;height:320px;"></canvas>
+    </div>
+    <p id="moneyChartMsg" style="font-size:.9rem;color:#666;margin-top:.3rem;"></p>
 
-<div id="cityTops" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-top:.75rem;"></div>
+    <h2>Varernes popularitet</h2>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+      <label>Periode:
+        <select id="popHours">
+          <option value="0.1667">10m</option>
+          <option value="0.3333">20m</option>
+          <option value="0.5" selected>30m</option>
+        </select>
+      </label>
+      <label>By:
+        <select id="popCity">
+          <option value="__all__" selected>Alle</option>
+          {% for city in cities %}
+            {% if city != 'Yamato værksted' %}<option value="{{ city }}">{{ city }}</option>{% endif %}
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div style="max-width:100%;min-height:260px;position:relative;margin-top:.5rem;">
+      <canvas id="popChart"></canvas>
+    </div>
+    <p id="popMsg" style="font-size:.9rem;color:#666;margin:.3rem 0 0;"></p>
+
+    <div id="cityTops" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-top:.75rem;"></div>
 
 <script>
 (function(){
@@ -206,10 +198,10 @@
     if (chart) chart.destroy();
     chart = new Chart(ctx, {
       type: 'bar',
-      data: { labels, datasets: [{ label: 'Items sold', data: values, backgroundColor: labels.map((_,i)=>hsl(i)) }] },
+      data: { labels, datasets: [{ label: 'Solgte varer', data: values, backgroundColor: labels.map((_,i)=>hsl(i)) }] },
       options: {
         responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false}, title:{display:true, text: (city==='__all__'?'Top items (all cities)':'Top items — '+city)}},
+        plugins:{ legend:{display:false}, title:{display:true, text: (city==='__all__'?'Topvarer i alle byer':'Topvarer i '+city)}},
         scales:{ y:{ beginAtZero:true, grace:1 } },
         animation:false
       }
@@ -225,12 +217,12 @@
       (tops[cn]||[]).forEach(([item,c]) => {
         const li = document.createElement('li'); li.textContent = `${item} — ${c}`; ol.appendChild(li);
       });
-      div.innerHTML = `<strong>${cn} — top 3</strong>`;
+      div.innerHTML = `<strong>${cn} - top 3</strong>`;
       div.appendChild(ol);
       topsWrap.appendChild(div);
     });
 
-    msg.textContent = `Window: last ${data.window_hours}h. Data from existing sell logs.`;
+    msg.textContent = `Periode: sidste ${data.window_hours} time(r). Data kommer fra salgsloggen.`;
   }
 
   const boot = () => { load(); hoursSel.onchange = load; citySel.onchange = load; setInterval(load, 60000); };
@@ -257,19 +249,19 @@
 
   async function draw(hours = 1) {
     try {
-      if (!canvas) { showMsg('Canvas not found.'); return; }
+      if (!canvas) { showMsg('Kunne ikke finde grafområdet.'); return; }
 
       // wait a tick in case Chart.js is still loading with defer
       if (!window.Chart) await new Promise(r => setTimeout(r, 50));
-      if (!window.Chart) { showMsg('Chart.js did not load.'); return; }
+      if (!window.Chart) { showMsg('Chart.js blev ikke indlæst.'); return; }
 
       const data = await fetchSeries(hours);
       const players = Object.keys(data || {});
-      if (!players.length) { showMsg('No players in response.'); return; }
+      if (!players.length) { showMsg('Ingen spillere fundet.'); return; }
 
       const first  = players[0];
       const labels = (data[first] || []).map(pt => pt[0]);
-      if (!labels.length) { showMsg('No time-series points yet. Make a transaction.'); return; }
+      if (!labels.length) { showMsg('Ingen datapunkter endnu. Lav en handel først.'); return; }
 
       const datasets = players.map((name, i) => ({
         label: name,
@@ -282,7 +274,7 @@
       }));
 
       const ctx = canvas.getContext('2d');
-      if (!ctx) { showMsg('Could not get 2D context.'); return; }
+      if (!ctx) { showMsg('Kunne ikke hente 2D-kontekst.'); return; }
 
       // 🔧 Always recreate the chart to avoid "undefined labels" update issues
       if (chartRef) { chartRef.destroy(); chartRef = null; }
@@ -295,7 +287,7 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { position: 'top' },
-            title: { display: true, text: "Players' Balances (€)" },
+            title: { display: true, text: "Spillernes saldo (yen)" },
             tooltip: { mode: 'nearest', intersect: false }
           },
           scales: {
@@ -309,7 +301,7 @@
       showMsg('');
     } catch (err) {
       console.error(err);
-      showMsg(`Chart error: ${err.message}`);
+      showMsg(`Graffejl: ${err.message}`);
     }
   }
 
@@ -326,13 +318,13 @@
 
 
 
-<h2>Reset / New Game</h2>
+<h2>Nulstil / nyt spil</h2>
 <form action="/reset_game" method="POST"
-      onsubmit="return confirm('Really reset the entire game? All progress is lost.');">
-    <button type="submit">Reset Game</button>
+      onsubmit="return confirm('Vil du virkelig nulstille hele spillet? Alt fremdrift går tabt.');">
+    <button type="submit">Nulstil spil</button>
 </form>
 
-
-<a href="/">Back to Game</a>
+<a href="/">Tilbage til spillet</a>
+</main>
 </body>
 </html>

@@ -1,158 +1,231 @@
 {
   "players": {
     "Player 1": {
-      "money": 56,
+      "money": 5600,
       "capacity": 2,
       "cargo": [
-        "Fleeb Juice",
-        "Fleeb Juice"
+        "Matcha",
+        "Matcha"
       ],
       "transaction_log": [
-        "Bought Fleeb Juice for \u20ac22 in Landslejr stenene.",
+        "K\u00f8bte Matcha for \u00a52200 i Nagasaki.",
         {
           "ts": "2025-10-21T15:24:54+00:00",
-          "money": 78
+          "money": 7800
         },
-        "Bought Fleeb Juice for \u20ac22 in Landslejr stenene.",
+        "K\u00f8bte Matcha for \u00a52200 i Nagasaki.",
         {
           "ts": "2025-10-21T15:24:55+00:00",
-          "money": 56
+          "money": 5600
         }
       ]
     },
     "Player 2": {
-      "money": 33,
+      "money": 3300,
       "capacity": 2,
       "cargo": [
-        "Zigerion Fish",
+        "Tun",
         ""
       ],
       "transaction_log": [
-        "Bought Quantum Silk for \u20ac74 in Vikingestykket.",
+        "K\u00f8bte Katanasv\u00e6rd for \u00a57400 i Kyoto.",
         {
           "ts": "2025-10-21T15:21:03+00:00",
-          "money": 26
+          "money": 2600
         },
-        "Sold Quantum Silk for \u20ac70 in Det lille hus p\u00e5 pr\u00e6rien.",
+        "Solgte Katanasv\u00e6rd for \u00a57000 i Yokohama.",
         {
           "ts": "2025-10-21T15:21:19+00:00",
-          "money": 96
+          "money": 9600
         },
-        "Bought Mega Seeds for \u20ac17 in B\u00f8gebjerg.",
+        "K\u00f8bte Wasabi for \u00a51700 i Sapporo.",
         {
           "ts": "2025-10-21T15:21:34+00:00",
-          "money": 79
+          "money": 7900
         },
-        "Sold Mega Seeds for \u20ac15 in Landslejr stenene.",
+        "Solgte Wasabi for \u00a51500 i Nagasaki.",
         {
           "ts": "2025-10-21T15:24:35+00:00",
-          "money": 94
+          "money": 9400
         },
-        "Bought Zigerion Fish for \u20ac61 in Limbjergg\u00e5rd.",
+        "K\u00f8bte Tun for \u00a56100 i Kobe.",
         {
           "ts": "2025-10-21T15:25:02+00:00",
-          "money": 33
+          "money": 3300
         }
       ]
     },
     "Player 3": {
-      "money": 64,
+      "money": 206400,
       "capacity": 2,
       "cargo": [
-        "Gromflomite Meat",
+        "Ramenkits",
         ""
       ],
       "transaction_log": [
-        "Bought Gromflomite Meat for \u20ac36 in Limbjergg\u00e5rd.",
+        "K\u00f8bte Ramenkits for \u00a53600 i Kobe.",
         {
           "ts": "2025-10-21T15:34:23+00:00",
-          "money": 64
+          "money": 6400
+        },
+        "Adminjustering: \u00a5+200000",
+        {
+          "ts": "2026-03-27T10:40:07+00:00",
+          "money": 206400
         }
       ]
     },
     "Player 4": {
-      "money": 64,
-      "capacity": 2,
+      "money": 19759500,
+      "capacity": 10,
       "cargo": [
-        "Gromflomite Meat",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
         ""
       ],
       "transaction_log": [
-        "Bought Gromflomite Meat for \u20ac36 in Limbjergg\u00e5rd.",
+        "K\u00f8bte Ramenkits for \u00a53600 i Kobe.",
         {
           "ts": "2025-10-21T15:34:14+00:00",
-          "money": 64
+          "money": 6400
+        },
+        "K\u00f8bte Wasabi for \u00a51700 i Sapporo.",
+        {
+          "ts": "2026-03-27T10:38:49+00:00",
+          "money": 4700
+        },
+        "Solgte Wasabi for \u00a51700 i Sapporo.",
+        {
+          "ts": "2026-03-27T10:38:56+00:00",
+          "money": 6400
+        },
+        "Solgte Ramenkits for \u00a53100 i Nagasaki.",
+        {
+          "ts": "2026-03-27T10:39:05+00:00",
+          "money": 9500
+        },
+        "Opgraderede lastvognen til 3 pladser for \u00a55000.",
+        {
+          "ts": "2026-03-27T10:40:41+00:00",
+          "money": 4500
+        },
+        "Adminjustering: \u00a5+20000000",
+        {
+          "ts": "2026-03-27T10:40:55+00:00",
+          "money": 20004500
+        },
+        "Opgraderede lastvognen til 4 pladser for \u00a512500.",
+        {
+          "ts": "2026-03-27T10:40:59+00:00",
+          "money": 19992000
+        },
+        "Opgraderede lastvognen til 5 pladser for \u00a520000.",
+        {
+          "ts": "2026-03-27T10:41:02+00:00",
+          "money": 19972000
+        },
+        "Opgraderede lastvognen til 6 pladser for \u00a527500.",
+        {
+          "ts": "2026-03-27T10:41:03+00:00",
+          "money": 19944500
+        },
+        "Opgraderede lastvognen til 7 pladser for \u00a535000.",
+        {
+          "ts": "2026-03-27T10:41:03+00:00",
+          "money": 19909500
+        },
+        "Opgraderede lastvognen til 8 pladser for \u00a542500.",
+        {
+          "ts": "2026-03-27T10:41:04+00:00",
+          "money": 19867000
+        },
+        "Opgraderede lastvognen til 9 pladser for \u00a550000.",
+        {
+          "ts": "2026-03-27T10:41:04+00:00",
+          "money": 19817000
+        },
+        "Opgraderede lastvognen til 10 pladser for \u00a557500.",
+        {
+          "ts": "2026-03-27T10:41:05+00:00",
+          "money": 19759500
         }
       ]
     }
   },
-  "selected_city": "B\u00f8gebjerg",
+  "selected_city": "Yamato v\u00e6rksted",
   "selected_player": "Player 4",
   "city_prices": {
-    "Laden": {
-      "Plumbus": 9,
-      "Mega Seeds": 14,
-      "Fleeb Juice": 21,
-      "Galactic Textiles": 24,
-      "Gromflomite Meat": 30,
-      "Glapflap Wine": 40
+    "Tokyo": {
+      "Nudler": 900,
+      "Wasabi": 1400,
+      "Matcha": 2100,
+      "Kimonoer": 2400,
+      "Ramenkits": 3000,
+      "Sake": 4000
     },
-    "DNS": {
-      "Plumbus": 11,
-      "Mega Seeds": 16,
-      "Fleeb Juice": 23,
-      "Galactic Textiles": 27,
-      "Gromflomite Meat": 34,
-      "Glapflap Wine": 46,
-      "Zigerion Fish": 59
+    "Osaka": {
+      "Nudler": 1100,
+      "Wasabi": 1600,
+      "Matcha": 2300,
+      "Kimonoer": 2700,
+      "Ramenkits": 3400,
+      "Sake": 4600,
+      "Tun": 5900
     },
-    "Vikingestykket": {
-      "Fleeb Juice": 24,
-      "Galactic Textiles": 26,
-      "Quantum Silk": 74,
-      "Schmeckles Furniture": 88,
-      "Portal Relics": 108,
-      "Federation Armor": 147
+    "Kyoto": {
+      "Matcha": 2400,
+      "Kimonoer": 2600,
+      "Katanasv\u00e6rd": 7400,
+      "Bonsaitr\u00e6er": 8800,
+      "Shinto-amuletter": 10800,
+      "Samurai-rustninger": 14700
     },
-    "Det lille hus p\u00e5 pr\u00e6rien": {
-      "Plumbus": 8,
-      "Gromflomite Meat": 33,
-      "Glapflap Wine": 44,
-      "Zigerion Fish": 57,
-      "Quantum Silk": 70,
-      "Schmeckles Furniture": 85
+    "Yokohama": {
+      "Nudler": 800,
+      "Ramenkits": 3300,
+      "Sake": 4400,
+      "Tun": 5700,
+      "Katanasv\u00e6rd": 7000,
+      "Bonsaitr\u00e6er": 8500
     },
-    "B\u00f8gebjerg": {
-      "Mega Seeds": 17,
-      "Fleeb Juice": 20,
-      "Galactic Textiles": 23,
-      "Glapflap Wine": 38,
-      "Zigerion Fish": 52,
-      "Quantum Silk": 65
+    "Sapporo": {
+      "Wasabi": 1700,
+      "Matcha": 2000,
+      "Kimonoer": 2300,
+      "Sake": 3800,
+      "Tun": 5200,
+      "Katanasv\u00e6rd": 6500
     },
-    "Limbjergg\u00e5rd": {
-      "Gromflomite Meat": 36,
-      "Glapflap Wine": 47,
-      "Zigerion Fish": 61,
-      "Schmeckles Furniture": 90,
-      "Portal Relics": 110,
-      "Federation Armor": 150
+    "Kobe": {
+      "Ramenkits": 3600,
+      "Sake": 4700,
+      "Tun": 6100,
+      "Bonsaitr\u00e6er": 9000,
+      "Shinto-amuletter": 11000,
+      "Samurai-rustninger": 15000
     },
-    "Landslejr stenene": {
-      "Plumbus": 10,
-      "Mega Seeds": 15,
-      "Fleeb Juice": 22,
-      "Galactic Textiles": 25,
-      "Gromflomite Meat": 31,
-      "Glapflap Wine": 41,
-      "Portal Relics": 93
+    "Nagasaki": {
+      "Nudler": 1000,
+      "Wasabi": 1500,
+      "Matcha": 2200,
+      "Kimonoer": 2500,
+      "Ramenkits": 3100,
+      "Sake": 4100,
+      "Shinto-amuletter": 9300
     },
-    "Opgrader last": {}
+    "Yamato v\u00e6rksted": {}
   },
-  "breaking_news": "",
+  "breaking_news": "penis",
   "closed_cities": [],
   "vogn_settings": {
-    "start_cost": 50,
-    "upgrade_step": 75
+    "start_cost": 5000,
+    "upgrade_step": 7500
   }
 }

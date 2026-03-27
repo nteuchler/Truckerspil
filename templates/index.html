@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trucker Tycoon</title>
+    <title>Sakura Handelsrejsen</title>
 
     <!-- global CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -12,7 +12,7 @@
     <style>
       #breaking-news{
         position:fixed;top:0;left:0;width:100%;
-        background:#ffe5e5;color:#c00;font-weight:1000;text-align:center;
+        background:#fff2e8;color:#9f1d35;font-weight:1000;text-align:center;
         padding:.5em 0;z-index:1000;display:none
       }
       body.has-banner{margin-top:3em}
@@ -22,10 +22,10 @@
 <body>
 
 <header>
-  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic0.gamerantimages.com%2Fwordpress%2Fwp-content%2Fuploads%2F2022%2F10%2FThe-poster-for-Rick-and-Morty-season-6.jpg&f=1&nofb=1&ipt=508b4c9151442bb0d7ecc01922e469faf86c015880e54892a751c4ef14da2729"
-       alt="Long-haul truck driving at dusk"
+  <img src="https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=1600&q=80"
+       alt="Japansk by med neonlys og handelsstemning"
        style="max-width:100%;height:auto;display:block;margin:0 auto;">
-  <h1>Handels spillet</h1>
+  <h1>Sakura Handelsrejsen</h1>
 </header>
 
 <!-- BREAKING NEWS BANNER -->
@@ -54,13 +54,13 @@
         <li><a href="{{ url_for('player_page', player_name=player) }}">{{ player }}</a></li>
       {% endfor %}
     </ul>
-    <p>Current player: <strong>{{ selected_player }}</strong></p>
+    <p>Nuværende spiller: <strong>{{ selected_player }}</strong></p>
   </section>
   
   <!-- Rig info -->
   <section class="card">
-    <h2>Dit rumskib</h2>
-    <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} Schmeckels</p>
+    <h2>Din handelsvogn</h2>
+    <p>Plads: {{ cargo|length }} / {{ capacity }} &nbsp;|&nbsp; Penge: {{ money }} yen</p>
   </section>
 
   <!-- City navigation -->
@@ -73,7 +73,7 @@
             <option value="{{ city }}"
                     {% if city == selected_city %}selected{% endif %}
                     {% if city in closed_cities %}disabled{% endif %}>
-              {{ city }}{% if city in closed_cities %} (Closed){% endif %}
+              {{ city }}{% if city in closed_cities %} (Lukket){% endif %}
             </option>
           {% endfor %}
         </select>
@@ -83,11 +83,11 @@
   </section>
 
   <!-- Marketplace or Truck-store -->
-  {% if selected_city == "Opgrader last" %}
+  {% if selected_city == "Yamato værksted" %}
   <section class="card">
-    <h2>Opgrader last</h2>
-    <p>Din rumskib kan på bære {{ capacity }} stk vare.</p>
-    <p>opgrader til {{ capacity + 1 }} antal vare for {{ upgrade_cost }} Schmeckels?</p>
+    <h2>Yamato værksted</h2>
+    <p>Din handelsvogn kan bære {{ capacity }} varer.</p>
+    <p>Vil du opgradere til {{ capacity + 1 }} varepladser for {{ upgrade_cost }} yen?</p>
   <form action="/upgrade_truck" method="POST" onsubmit="return buyItem(this);">
     <input type="hidden" name="player" value="{{ selected_player }}">
     <button type="submit">Køb opgradering</button>
@@ -95,11 +95,11 @@
   </section>
   {% else %}
   <section class="card">
-    <h2>Marketplace – {{ selected_city }}</h2>
+    <h2>Markedet i {{ selected_city }}</h2>
     <ul>
       {% for item, price in items.items() %}
         <li style="margin:.2rem 0">
-          {{ item }} – {{ price }} Schmeckels
+          {{ item }} – {{ price }} yen
       <form action="/buy" method="POST" style="display:inline" onsubmit="return buyItem(this);">
         <input type="hidden" name="player" value="{{ selected_player }}">
         <input type="hidden" name="item" value="{{ item }}">
@@ -113,12 +113,12 @@
 
   <!-- Cargo spaces -->
   <section class="card">
-    <h2>Cargo Spaces</h2>
+    <h2>Lastrum</h2>
     <ul>
       {% for space in cargo %}
         <li style="margin:.2rem 0">
-          Space&nbsp;{{ loop.index }}:
-          {{ space if space else 'Empty' }}
+          Plads&nbsp;{{ loop.index }}:
+          {{ space if space else 'Tom' }}
 
           {% if space %}
       <form action="/sell" method="POST" style="display:inline" onsubmit="return sellItem(this);">
@@ -139,7 +139,7 @@
 
   <!-- Transaction log -->
   <section class="card">
-    <h2>Trip Log</h2>
+    <h2>Rejselog</h2>
     <ul>
       {% for entry in log|reverse %}
         <li style="margin:.15rem 0">{{ entry }}</li>
@@ -150,8 +150,8 @@
   <!-- Flavour text -->
   <section class="card">
     <p style="font-style:italic;color:#555">
-      “Fra Helsingørs toldby til Ribe’s brolagte torv vinder den, som kender vind og vej.
-      Planlæg klogt, hold hjulene rullende, og husk: tavse hjul bærer ingen fortjeneste.”
+      “Fra Tokyos neonlys til Kyotos templer vinder den, som kender markedet.
+      Planlæg ruten skarpt, hold handlen i gang, og husk: en tom vogn tjener ingen yen.”
     </p>
   </section>
 </main>
@@ -162,7 +162,7 @@
 let currentNews = {{ breaking_news|tojson }};
 const banner = document.getElementById('breaking-news');
 const bodyEl = document.body;
-function renderBanner(n){ if(n){ banner.textContent = `Breaking News: ${n}`; banner.style.display='block'; bodyEl.classList.add('has-banner'); }
+function renderBanner(n){ if(n){ banner.textContent = `Seneste nyt: ${n}`; banner.style.display='block'; bodyEl.classList.add('has-banner'); }
                           else { banner.style.display='none'; bodyEl.classList.remove('has-banner'); } }
 renderBanner(currentNews);
 async function refreshNews(){
