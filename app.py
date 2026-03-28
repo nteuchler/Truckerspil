@@ -273,7 +273,8 @@ def index():
         breaking_news=breaking_news,  # Pass breaking news to the front end
         closed_cities=closed_cities,
         capacity=player_data['capacity'],          # NEW
-        upgrade_cost=next_upgrade_cost(player_data['capacity'])  # NEW 
+        upgrade_cost=next_upgrade_cost(player_data['capacity']),  # NEW
+        is_upgrade_city=(selected_city == UPGRADE_CITY),
     )
 
 
@@ -723,7 +724,8 @@ def player_page(player_name):
         breaking_news=breaking_news,
         closed_cities=closed_cities,
         capacity=player_data['capacity'],
-        upgrade_cost=next_upgrade_cost(player_data['capacity'])
+        upgrade_cost=next_upgrade_cost(player_data['capacity']),
+        is_upgrade_city=(selected_city == UPGRADE_CITY),
     )
 
 
